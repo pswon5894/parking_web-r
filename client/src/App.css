@@ -1,0 +1,62 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f5f7fa; /* 은은한 배경색 */
+    color: #333;
+}
+
+h2 {
+    margin: 0;
+    padding: 15px;
+    text-align: center;
+    background-color: #2c3e50; /* 진한 네이비 */
+    color: #fff;
+    font-size: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* The #map ID is used by Leaflet in MapComponent */
+#map {
+    width: 100%;
+    height: calc(100vh - 60px); /* 제목 높이만큼 빼기 */
+    border-top: 3px solid #2c3e50;
+}
