@@ -5,6 +5,7 @@ import MapComponent from './components/MapComponent';
 import SaveButton from './components/SaveButton';
 import ImageModal from './components/ImageModal';
 import { readImage } from './utils/imageUtils';
+import Login from './components/Login';
 
 function App() {
   const [currentLatLng, setCurrentLatLng] = useState(null);
@@ -35,10 +36,10 @@ function App() {
       return;
     }
 
-    if (!file) {
-      alert('주차 사진을 찍거나 선택해주세요.');
-      return;
-    }
+    // if (!file) {
+    //   alert('주차 사진을 찍거나 선택해주세요.');
+    //   return;
+    // }
 
     const imageBase64 = await readImage(file);
     const { lat, lng } = currentLatLng;

@@ -1,7 +1,7 @@
 // src/components/MapComponent.js
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef} from 'react';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
+import 'leaflet/dist/leaflet.css';
 
 // Fix for default icon issues with Webpack
 delete L.Icon.Default.prototype._getIconUrl;
@@ -13,60 +13,89 @@ L.Icon.Default.mergeOptions({
 
 function MapComponent({ onLocationChange }) {
   const mapRef = useRef(null);
-  // No need for local currentLatLng state if it's passed via prop
-  // const [currentLatLng, setCurrentLatLng] = useState(null);
+  const mapContainerRef = useRef(null); // DOM 참조 추가
+  const markerRef = useRef(null);
 
   useEffect(() => {
-    // Initialize map only once
-    if (!mapRef.current) {
-      const map = L.map('map').setView([37.5665, 126.9780], 13); // Default view
-      mapRef.current = map; // Store map instance in ref
+    // DOM 요소가 존재하는지 확인
+    if (!mapContainerRef.current) return;
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(map);
+    // 이미 지도가 초기화되었다면 리턴
+    if (mapRef.current) return;
 
-      map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true });
+    // 약간의 지연을 두고 지도 초기화 (DOM이 완전히 준비될 때까지)
+    const timer = setTimeout(() => {
+      try {
+        const map = L.map(mapContainerRef.current).setView([37.5665, 126.9780], 13);
+        mapRef.current = map;
 
-      map.on('locationfound', function (e) {
-        // setCurrentLatLng(e.latlng); // Update local state
-        onLocationChange(e.latlng); // Pass location to parent
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors',
+          maxZoom: 19
+        }).addTo(map);
 
-        // Clear existing markers if any
-        map.eachLayer(layer => {
-            if (layer instanceof L.Marker) {
-                map.removeLayer(layer);
-            }
+        // 지도가 완전히 로드된 후 위치 찾기
+        map.whenReady(() => {
+          map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true });
         });
 
-        // Add a marker for the current location
-        L.marker(e.latlng)
-          .addTo(map)
-          .bindPopup('내 현재 위치')
-          .openPopup();
+        map.on('locationfound', function (e) {
+          onLocationChange(e.latlng);
 
-        // L.circle(e.latlng, e.accuracy).addTo(map); // Optional: accuracy circle
-      });
+          // 기존 마커 제거
+          if (markerRef.current) {
+            map.removeLayer(markerRef.current);
+          }
 
-      map.on('locationerror', function (e) {
-        alert(`위치 정보를 사용할 수 없습니다: ${e.message}`);
-        console.error("Location error:", e);
-      });
-    }
+          // 새 마커 추가
+          markerRef.current = L.marker(e.latlng)
+            .addTo(map)
+            .bindPopup('내 현재 위치')
+            .openPopup();
+        });
 
-    // Cleanup function
+        map.on('locationerror', function (e) {
+          alert(`위치 정보를 사용할 수 없습니다: ${e.message}`);
+          console.error("Location error:", e);
+        });
+
+      } catch (error) {
+        console.error("Map initialization error:", error);
+      }
+    }, 100); // 100ms 지연
+
+    // Cleanup
     return () => {
+      clearTimeout(timer);
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
+      markerRef.current = null;
     };
-  }, [onLocationChange]); // Dependency array: re-run if onLocationChange changes
+  }, [onLocationChange]);
+
+  // 지도 크기 재조정 (윈도우 리사이즈 시)
+  useEffect(() => {
+    const handleResize = () => {
+      if (mapRef.current) {
+        mapRef.current.invalidateSize();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
-    <div id="map" style={{ width: '100%', height: 'calc(100vh - 60px)', borderTop: '3px solid #2c3e50' }}>
-      {/* The map will be rendered here by Leaflet */}
-    </div>
+    <div 
+      ref={mapContainerRef}
+      style={{ 
+        width: '100%', 
+        height: 'calc(100vh - 70px)', 
+        borderTop: '3px solid #2c3e50' 
+      }}
+    />
   );
 }
 
