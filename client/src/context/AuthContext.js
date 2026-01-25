@@ -39,6 +39,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (username, password) => {
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || '회원가입 실패');
+      }
+
+      const data = await response.json();
+      setUser(data.user);
+      localStorage.setItem('token', data.token);
+      return data.user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await api.post('/auth/logout');
@@ -48,7 +70,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-  const value = { user, loading, login, logout };
+  const value = { user, loading, login, register, logout };
 
   return (
     <AuthContext.Provider value={value}>

@@ -8,7 +8,7 @@ const path = require('path');
 const bcrypt = require('bcrypt')
 
 const app = express();
-const port = 3000;
+const port = 5000;
 const MONGO_URI = 'mongodb://localhost:27017/parking_db'; // 여러분의 MongoDB URI
 
 // 세션 미들웨어 설정
