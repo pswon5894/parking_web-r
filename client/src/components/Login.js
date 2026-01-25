@@ -128,7 +128,7 @@ function Login() {
 
       {/* ========== 로그인 모달 ========== */}
       {showLoginModal && (
-        <div className="modal-overlay" onClick={handleCloseLoginModal}>
+        <div className="modal-overlay" >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>로그인</h3>
@@ -183,10 +183,10 @@ function Login() {
 
       {/* ========== 회원가입 모달 ========== */}
       {showRegisterModal && (
-        <div className="modal-overlay" onClick={handleCloseRegisterModal}>
+        <div className="modal-overlay">
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>회원가입</h2>
+              <h2 class="modal-h2">회원가입</h2>
               <button className="close-btn" onClick={handleCloseRegisterModal}>
                 ×
               </button>
