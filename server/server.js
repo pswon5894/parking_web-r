@@ -6,10 +6,23 @@ const MongoStore = require('connect-mongo');
 const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcrypt')
+require('dotenv').config();
 
 const app = express();
 const port = 5000;
-const MONGO_URI = 'mongodb://localhost:27017/parking_db'; // 여러분의 MongoDB URI
+// const MONGO_URI = 'mongodb://localhost:27017/parking_db'; // 여러분의 MongoDB URI
+
+config = {
+    DB_USERNAME: process.env.DB_USERNAME,
+    DB_PASSWORD: process.env.DB_PASSWORD,
+    DB_NAME: process.env.DB_NAME,
+};
+
+// MongoDB Atlas 연결 설정
+const username = encodeURIComponent(config.DB_USERNAME);
+const password = encodeURIComponent(config.DB_PASSWORD);
+// MongoDB Atlas URI 생성
+const MONGODB_URI = `mongodb+srv://${username}:${password}@cluster0.wlgwwbm.mongodb.net/?appName=Cluster0`;
 
 // 세션 미들웨어 설정
 app.use(session({

@@ -44,7 +44,7 @@ body {
     color: #333;
 }
 
-h2 {
+.main-h2 {
     margin: 0;
     padding: 15px;
     text-align: center;
