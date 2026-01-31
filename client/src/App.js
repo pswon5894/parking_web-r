@@ -1,7 +1,7 @@
 // src/App.js
 import React, { useState, useCallback } from 'react';
 import './App.css';
-import { useThemeStore } from "./theme/themeStore";
+import {useThemeStore} from "./theme/themeStore";
 import ThemeToggle from "./theme/ThemeToggle";
 
 import MapComponent from './components/MapComponent';

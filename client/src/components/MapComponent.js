@@ -3,6 +3,10 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
+import { useAuthStore } from '../store/authStore'; // ✅ zustand store 가져오기
+
+import { useAuth } from '../context/AuthContext';
+
 // Fix for default icon issues with Webpack
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -17,8 +21,15 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
   const currentLocationMarkerRef = useRef(null); // 현재 위치 마커
   const savedMarkersRef = useRef([]); // 저장된 주차 위치 마커들
 
+  const { loading, user } = useAuth(); // ✅ loading 상태 가져오기
+
+  // ✅ zustand에서 로그인 여부 가져오기
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+
+
   // 지도 초기화
   useEffect(() => {
+    if (loading) return;
     if (!mapContainerRef.current) return;
     if (mapRef.current) return;
 
@@ -33,9 +44,18 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
           maxZoom: 19
         }).addTo(map);
 
-        // 지도 완전히 로드 후 위치 찾기
+        // // 지도 완전히 로드 후 위치 찾기
+        // map.whenReady(() => {
+        //   map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true });
+        // });
+
+        // ✅ 로그인 여부 확인 후 위치 찾기
         map.whenReady(() => {
-          map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true });
+          if (isLoggedIn) {
+            map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true });
+          } else {
+            alert("로그인 후 위치 찾기가 가능합니다.");
+          }
         });
 
         // 위치 찾기 성공
@@ -76,7 +96,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
       currentLocationMarkerRef.current = null;
       savedMarkersRef.current = [];
     };
-  }, [onLocationChange]);
+  }, [loading, isLoggedIn, onLocationChange]);
 
   // 저장된 주차 위치 마커 추가/업데이트
   useEffect(() => {

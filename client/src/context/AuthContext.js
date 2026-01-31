@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import { useAuthStore } from '../store/authStore';
 
 const AuthContext = createContext();
 
@@ -8,6 +9,8 @@ const API_URL = 'http://localhost:5000/api';
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { login: setStoreLogin, logout: setStoreLogout } = useAuthStore();
+
 
   // 앱 시작 시 현재 사용자 확인
   useEffect(() => {
@@ -25,6 +28,7 @@ export function AuthProvider({ children }) {
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
+        setStoreLogin(data.user); // ✅ zustand에도 반영
         console.log('✅ 자동 로그인:', data.user.username);
       } else {
         console.log('ℹ️ 로그인 필요');
@@ -59,6 +63,7 @@ export function AuthProvider({ children }) {
 
       console.log('✅ 회원가입 성공:', data.user.username);
       setUser(data.user);
+      setStoreLogin(data.user); // ✅ zustand 업데이트
       return data.user;
 
     } catch (error) {
@@ -90,6 +95,7 @@ export function AuthProvider({ children }) {
 
       console.log('✅ 로그인 성공:', data.user.username);
       setUser(data.user);
+      setStoreLogin(data.user); // ✅ zustand 업데이트
       return data.user;
 
     } catch (error) {
@@ -111,6 +117,7 @@ export function AuthProvider({ children }) {
       if (response.ok) {
         console.log('✅ 로그아웃 성공');
         setUser(null);
+        setStoreLogout(); // ✅ zustand 업데이트
       } else {
         throw new Error('로그아웃 실패');
       }
@@ -119,6 +126,7 @@ export function AuthProvider({ children }) {
       console.error('로그아웃 에러:', error);
       // 에러가 나도 로컬에서는 로그아웃 처리
       setUser(null);
+      setStoreLogout(); // ✅ zustand 업데이트
     }
   };
 

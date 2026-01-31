@@ -1,5 +1,5 @@
 // ThemeToggle.js
-import { useThemeStore } from "./themeStore";
+import {useThemeStore} from "./themeStore";
 
 function ThemeToggle() {
   const { darkMode, toggleDarkMode } = useThemeStore();
