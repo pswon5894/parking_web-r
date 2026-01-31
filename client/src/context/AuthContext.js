@@ -1,85 +1,149 @@
-// client/src/context/AuthContext.js
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 
-// Axios 인스턴스 설정 (CORS 쿠키 전송을 위함)
-const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
-  withCredentials: true,
-});
+const AuthContext = createContext();
 
-const AuthContext = createContext(null);
+// API URL 설정
+const API_URL = 'http://localhost:5000/api';
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 앱 시작 시 로그인 상태 확인
+  // 앱 시작 시 현재 사용자 확인
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const res = await api.get('/auth/status');
-        setUser(res.data);
-      } catch (error) {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkLoginStatus();
+    checkAuth();
   }, []);
 
-  const login = async (username, password) => {
+  // 현재 사용자 확인
+  const checkAuth = async () => {
     try {
-      const res = await api.post('/auth/login', { username, password });
-      setUser(res.data);
+      const response = await fetch(`${API_URL}/auth/me`, {
+        method: 'GET',
+        credentials: 'include' // 쿠키 포함 (중요!)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+        console.log('✅ 자동 로그인:', data.user.username);
+      } else {
+        console.log('ℹ️ 로그인 필요');
+      }
     } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
+      console.error('인증 확인 실패:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // 회원가입
   const register = async (username, password) => {
     try {
-      const response = await fetch('/api/auth/register', {
+      console.log('📝 회원가입 시도:', username);
+
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include', // 쿠키 포함
         body: JSON.stringify({ username, password })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || '회원가입 실패');
+        console.error('❌ 회원가입 실패:', data.error);
+        throw new Error(data.error || '회원가입에 실패했습니다.');
       }
 
-      const data = await response.json();
+      console.log('✅ 회원가입 성공:', data.user.username);
       setUser(data.user);
-      localStorage.setItem('token', data.token);
       return data.user;
+
     } catch (error) {
+      console.error('회원가입 에러:', error);
       throw error;
     }
   };
 
-  const logout = async () => {
+  // 로그인
+  const login = async (username, password) => {
     try {
-      await api.post('/auth/logout');
-      setUser(null);
+      console.log('🔐 로그인 시도:', username);
+
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include', // 쿠키 포함
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('❌ 로그인 실패:', data.error);
+        throw new Error(data.error || '로그인에 실패했습니다.');
+      }
+
+      console.log('✅ 로그인 성공:', data.user.username);
+      setUser(data.user);
+      return data.user;
+
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error('로그인 에러:', error);
+      throw error;
     }
   };
-  
-  const value = { user, loading, login, register, logout };
+
+  // 로그아웃
+  const logout = async () => {
+    try {
+      console.log('👋 로그아웃 시도');
+
+      const response = await fetch(`${API_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        console.log('✅ 로그아웃 성공');
+        setUser(null);
+      } else {
+        throw new Error('로그아웃 실패');
+      }
+
+    } catch (error) {
+      console.error('로그아웃 에러:', error);
+      // 에러가 나도 로컬에서는 로그아웃 처리
+      setUser(null);
+    }
+  };
+
+  const value = {
+    user,
+    loading,
+    login,
+    register,
+    logout
+  };
 
   return (
     <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-// 커스텀 훅
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+// Custom Hook
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth는 AuthProvider 안에서 사용해야 합니다.');
+  }
+  return context;
+}
+
+export default AuthContext;

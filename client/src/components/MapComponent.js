@@ -14,10 +14,10 @@ L.Icon.Default.mergeOptions({
 function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
-  const currentLocationMarkerRef = useRef(null); //  현재 위치 마커
-  const savedMarkersRef = useRef([]); //  저장된 주차 위치 마커들
+  const currentLocationMarkerRef = useRef(null); // 현재 위치 마커
+  const savedMarkersRef = useRef([]); // 저장된 주차 위치 마커들
 
-  //  지도 초기화
+  // 지도 초기화
   useEffect(() => {
     if (!mapContainerRef.current) return;
     if (mapRef.current) return;
@@ -38,7 +38,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
           map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true });
         });
 
-        //  위치 찾기 성공
+        // 위치 찾기 성공
         map.on('locationfound', function (e) {
           console.log('Location found:', e.latlng);
           onLocationChange(e.latlng);
@@ -48,7 +48,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
             map.removeLayer(currentLocationMarkerRef.current);
           }
 
-          // 새 현재 위치 마커 추가 (파란색)
+          // 새 현재 위치 마커 추가 (기본 아이콘)
           currentLocationMarkerRef.current = L.marker(e.latlng)
             .addTo(map)
             .bindPopup('내 현재 위치')
@@ -78,21 +78,18 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     };
   }, [onLocationChange]);
 
-  //  저장된 주차 위치 마커 추가/업데이트
+  // 저장된 주차 위치 마커 추가/업데이트
   useEffect(() => {
     if (!mapRef.current || !markers) return;
 
     console.log('Updating markers:', markers.length);
 
-    // 새로 추가된 마커만 지도에 추가
     markers.forEach((markerData) => {
-      // 이미 추가된 마커인지 확인
       const alreadyAdded = savedMarkersRef.current.find(m => m.id === markerData.id);
       if (alreadyAdded) return;
 
       console.log('Adding new marker:', markerData.id);
 
-      // 팝업 내용 생성
       const popupContent = `
         <div style="text-align: center; min-width: 220px;">
           <b style="font-size: 16px;">🚗 주차 위치</b><br/>
@@ -143,37 +140,18 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
         </div>
       `;
 
-      // 주차 위치 마커 생성 (빨간색 커스텀 아이콘)
-      const parkingIcon = L.icon({
-        iconUrl: 'data:image/svg+xml;base64,' + btoa(`
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="32" height="48">
-            <path fill="#DC143C" stroke="#8B0000" stroke-width="1.5" 
-                  d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 18 9 18s9-11.25 9-18c0-4.97-4.03-9-9-9z"/>
-            <text x="12" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="white">P</text>
-          </svg>
-        `),
-        iconSize: [32, 48],
-        iconAnchor: [16, 48],
-        popupAnchor: [0, -48]
-      });
+      // 기본 Leaflet 마커 사용
+      const marker = L.marker([markerData.lat, markerData.lng]).addTo(mapRef.current);
 
-      // 마커 생성 및 추가
-      const marker = L.marker([markerData.lat, markerData.lng], {
-        icon: parkingIcon
-      }).addTo(mapRef.current);
-
-      // 팝업 바인딩
       marker.bindPopup(popupContent, {
         maxWidth: 250,
         className: 'custom-popup'
       });
 
-      // 마커 클릭 시 팝업 열기
       marker.on('click', () => {
         marker.openPopup();
       });
 
-      // 참조에 저장 (중복 방지용)
       savedMarkersRef.current.push({
         id: markerData.id,
         marker: marker
@@ -181,7 +159,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     });
   }, [markers, onMarkerImageClick]);
 
-  //  지도 크기 재조정 (윈도우 리사이즈 시)
+  // 지도 크기 재조정
   useEffect(() => {
     const handleResize = () => {
       if (mapRef.current) {

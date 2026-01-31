@@ -1,177 +1,160 @@
-
-//주차 정보 저장
-// router.post('/run', async (req, res) => {
-//     try{
-//         const {}
-//     }
-// })
-
-// 데이터 준비
-
-// MongoDB에 결과 저장
-
 // server/routes/user.js
 const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
 const User = require('../models/User');
-const { authMiddleware } = require('../middleware/auth');
 
-// ===== 사용자 관련 라우트 =====
-
-// 사용자 정보 조회
-router.get('/profile', authMiddleware, async (req, res) => {
+// 회원가입
+router.post('/register', async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
-    if (!user) {
-      return res.status(404).json({ message: '사용자를 찾을 수 없습니다' });
-    }
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// 사용자 정보 업데이트
-router.patch('/profile', authMiddleware, async (req, res) => {
-  try {
-    const { username, email, phone, profileImage } = req.body;
+    console.log('회원가입 요청:', req.body);
     
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      { username, email, phone, profileImage },
-      { new: true, runValidators: true }
-    ).select('-password');
-    
-    res.json(user);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+    const { username, password } = req.body;
 
-// ===== 주차 위치 관련 라우트 =====
-
-// 모든 주차 위치 조회
-router.get('/parking-locations', authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    res.json(user.getParkingLocations());
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// 특정 주차 위치 조회
-router.get('/parking-locations/:locationId', authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    const location = user.parkingLocations.id(req.params.locationId);
-    
-    if (!location) {
-      return res.status(404).json({ message: '주차 위치를 찾을 수 없습니다' });
-    }
-    
-    res.json(location);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// 새 주차 위치 추가
-router.post('/parking-locations', authMiddleware, async (req, res) => {
-  try {
-    const { name, latitude, longitude, address, description } = req.body;
-    
-    if (!name || latitude === undefined || longitude === undefined) {
+    // 입력 검증
+    if (!username || !password) {
       return res.status(400).json({ 
-        message: 'name, latitude, longitude는 필수 입력값입니다' 
+        success: false,
+        error: '아이디와 비밀번호를 모두 입력해주세요.' 
       });
     }
-    
-    const user = await User.findById(req.user.id);
-    await user.addParkingLocation({
-      name,
-      latitude,
-      longitude,
-      address,
-      description
-    });
-    
-    res.status(201).json({
-      message: '주차 위치가 추가되었습니다',
-      parkingLocations: user.getParkingLocations()
-    });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
 
-// 주차 위치 업데이트
-router.patch('/parking-locations/:locationId', authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    const { name, latitude, longitude, address, description } = req.body;
-    
-    await user.updateParkingLocation(req.params.locationId, {
-      name,
-      latitude,
-      longitude,
-      address,
-      description
-    });
-    
-    res.json({
-      message: '주차 위치가 업데이트되었습니다',
-      parkingLocations: user.getParkingLocations()
-    });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// 주차 위치 삭제
-router.delete('/parking-locations/:locationId', authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    await user.removeParkingLocation(req.params.locationId);
-    
-    res.json({
-      message: '주차 위치가 삭제되었습니다',
-      parkingLocations: user.getParkingLocations()
-    });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// 기본 주차 위치 설정
-router.post('/parking-locations/:locationId/set-default', authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    await user.setDefaultParkingLocation(req.params.locationId);
-    
-    res.json({
-      message: '기본 주차 위치가 설정되었습니다',
-      defaultLocation: user.getDefaultParkingLocation()
-    });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// 기본 주차 위치 조회
-router.get('/parking-locations/default', authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    const defaultLocation = user.getDefaultParkingLocation();
-    
-    if (!defaultLocation) {
-      return res.status(404).json({ message: '설정된 기본 주차 위치가 없습니다' });
+    if (username.length < 3) {
+      return res.status(400).json({ 
+        success: false,
+        error: '아이디는 최소 3자 이상이어야 합니다.' 
+      });
     }
-    
-    res.json(defaultLocation);
+
+    if (password.length < 6) {
+      return res.status(400).json({ 
+        success: false,
+        error: '비밀번호는 최소 6자 이상이어야 합니다.' 
+      });
+    }
+
+    // 중복 확인
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ 
+        success: false,
+        error: '이미 존재하는 아이디입니다.' 
+      });
+    }
+
+    // 사용자 생성
+    const user = new User({ username, password });
+    await user.save();
+
+    // 세션에 저장
+    req.session.userId = user._id;
+    req.session.username = user.username;
+
+    console.log('회원가입 성공:', username);
+
+    // 성공 응답
+    res.status(201).json({
+      success: true,
+      message: '회원가입이 완료되었습니다.',
+      user: {
+        id: user._id,
+        username: user.username
+      }
+    });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('회원가입 오류:', error);
+    res.status(500).json({ 
+      success: false,
+      error: '회원가입 중 오류가 발생했습니다.' 
+    });
   }
+});
+
+// 로그인
+router.post('/login', async (req, res) => {
+    try {
+        console.log('🔐 로그인 요청:', req.body);
+        
+        const { username, password } = req.body;
+
+        // 입력 검증
+        if (!username || !password) {
+            return res.status(400).json({
+                success: false,
+                error: '아이디와 비밀번호를 모두 입력해주세요.'
+            });
+        }
+
+        // 사용자 찾기
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                error: '아이디 또는 비밀번호가 올바르지 않습니다.'
+            });
+        }
+
+        // 비밀번호 확인
+        const isPasswordValid = await user.comparePassword(password);
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                success: false,
+                error: '아이디 또는 비밀번호가 올바르지 않습니다.'
+            });
+        }
+
+        // 세션에 저장
+        req.session.userId = user._id;
+        req.session.username = user.username;
+
+        console.log('✅ 로그인 성공:', username);
+
+        // 성공 응답
+        res.json({
+            success: true,
+            message: '로그인이 완료되었습니다.',
+            user: {
+                id: user._id,
+                username: user.username
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ 로그인 오류:', error);
+        res.status(500).json({
+            success: false,
+            error: '로그인 중 오류가 발생했습니다.'
+        });
+    }
+});
+
+// 현재 사용자 확인 (자동 로그인용)
+router.get('/me', (req, res) => {
+    if (req.session.userId) {
+        res.json({
+            success: true,
+            user: {
+                id: req.session.userId,
+                username: req.session.username
+            }
+        });
+    } else {
+        res.status(401).json({
+            success: false,
+            error: '로그인이 필요합니다.'
+        });
+    }
+});
+
+// 로그아웃 처리
+router.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.redirect('/welcome');
+        }
+        res.clearCookie('connect.sid');
+        res.redirect('/');
+    });
 });
 
 module.exports = router;
