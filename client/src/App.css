@@ -68,17 +68,20 @@ body {
   min-height: 100vh;
 }
 .app.dark {
-  background-color: #121212;
-  color: white;
+  /* background-color: #121212;
+  color: white; */
   min-height: 100vh;
   filter: invert(1) hue-rotate(180deg) grayscale(0.2)
+  /* 색상 반전 100%, 색조 회전 180도, 흑백화 20% */
+  /* 완전 반전(invert) + 보색 유지(hue-rotate) + 
+  약간의 흑백화(grayscale)"를 통해 이미지를 자연스러운 다크 모드 스타일 */
 }
 .btn-light {
   background-color: #f0f0f0;
   color: #000;
   border: none;
   float: left;
-  margin: 10px;
+  margin: 20px;
   border-radius: 3px;
 }
 .btn-dark {
@@ -86,6 +89,6 @@ body {
   color: #fff;
   border: none;
   float: left;
-  margin: 10px;
+  margin: 20px;
   border-radius: 3px;
 }

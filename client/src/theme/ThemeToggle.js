@@ -7,7 +7,7 @@ function ThemeToggle() {
   return (
     <button className={darkMode ? "btn-dark" : "btn-light"}
       onClick={toggleDarkMode}>
-      {darkMode ? "🌙 다크 모드" : "☀️ 라이트 모드"}
+      {darkMode ? "🌙 야간 모드" : "☀️ 주간 모드"}
     </button>
   );
 }
