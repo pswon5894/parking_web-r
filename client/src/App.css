@@ -60,3 +60,32 @@ body {
     height: calc(100vh - 60px); /* 제목 높이만큼 빼기 */
     border-top: 3px solid #2c3e50;
 }
+
+
+.app.light {
+  background-color: white;
+  color: black;
+  min-height: 100vh;
+}
+.app.dark {
+  background-color: #121212;
+  color: white;
+  min-height: 100vh;
+  filter: invert(1) hue-rotate(180deg) grayscale(0.2)
+}
+.btn-light {
+  background-color: #f0f0f0;
+  color: #000;
+  border: none;
+  float: left;
+  margin: 10px;
+  border-radius: 3px;
+}
+.btn-dark {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  float: left;
+  margin: 10px;
+  border-radius: 3px;
+}

@@ -1,6 +1,9 @@
 // src/App.js
 import React, { useState, useCallback } from 'react';
 import './App.css';
+import { useThemeStore } from "./theme/themeStore";
+import ThemeToggle from "./theme/ThemeToggle";
+
 import MapComponent from './components/MapComponent';
 import SaveButton from './components/SaveButton';
 import ImageModal from './components/ImageModal';
@@ -8,6 +11,9 @@ import { readImage } from './utils/imageUtils';
 import Login from './components/Login';
 
 function App() {
+
+  const darkMode = useThemeStore((state) => state.darkMode);
+
   const [currentLatLng, setCurrentLatLng] = useState(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState('');
@@ -86,7 +92,8 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div className={darkMode ? "app dark" : "App"}>
+      <ThemeToggle />
       <Login />
       <h2 class="main-h2">주차 위치 지도</h2>
       
@@ -109,23 +116,3 @@ function App() {
 }
 
 export default App;
-
-// --- Original app.js logic for creating marker and popup ---
-    // Note: In a real React app with Leaflet, you'd likely manage markers
-    // through state or a custom hook within MapComponent, passing them
-    // as props or using Leaflet's API directly from App.js if needed.
-    // For this conversion, we'll simulate the popup logic.
-
-//     참고: 실제 React 앱에서 Leaflet을 사용할 경우, 일반적으로 MapComponent 내에서 
-//     상태(state)나 커스텀 훅을 통해 마커를 관리하며, 이를 props로 전달하거나 필요하다면 
-//     App.js에서 직접 Leaflet API를 사용할 수 있습니다.
-// 이번 변환에서는 팝업 로직을 시뮬레이션하는 방식으로 구현합니다.
-
-// In a full React implementation, you would typically add the marker
-    // to the map visually here, for example, by passing lat, lng, imageBase64,
-    // popupContent to MapComponent as a prop, and MapComponent would then
-    // render the L.marker.
-
-        // To make onclick work from string content, we had to expose openImageModal globally.
-    // This is generally discouraged in React, and a more idiomatic way would be to
-    // render a custom React component inside the Leaflet popup using ReactDOM.createPortal.
