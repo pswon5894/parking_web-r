@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   location: {type: {lat: Number, lng: Number}, required: false},
-  parktime: { type: Date, default: Date.now }
+  parktime: { type: Date, default: Date.now },
+  imageBase64: { type: String, required: false },
 });
 
 userSchema.pre('save', async function () {

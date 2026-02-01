@@ -1,11 +1,12 @@
 // src/components/MapComponent.js
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import { useAuthStore } from '../store/authStore'; //  zustand store 가져오기
-
 import { useAuth } from '../context/AuthContext';
+
+import SaveButton from './SaveButton';
 
 // Fix for default icon issues with Webpack
 delete L.Icon.Default.prototype._getIconUrl;
@@ -25,11 +26,16 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
   //  zustand에서 로그인 여부 가져오기
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
+  const [currentLatLng, setCurrentLatLng] = useState(null);
+
+  console.log('MapComponent - user:', user); // ✅ 디버깅용
+  console.log('MapComponent - loading:', loading); // ✅ 디버깅용
+
   const refreshLocation = () => {
-  if (!isLoggedIn) {
-    alert('로그인 후 위치 갱신이 가능합니다.');
-    return;
-  }
+  // if (!isLoggedIn) {
+  //   alert('로그인 후 위치 갱신이 가능합니다.');
+  //   return;
+  // }
 
   if (!mapRef.current) return;
 
@@ -39,94 +45,6 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     enableHighAccuracy: true,
   });
 };
-
-
-  // // 지도 초기화
-  // useEffect(() => {
-  //   if (loading) return;
-  //   if (!mapContainerRef.current) return;
-  //   if (mapRef.current) return;
-
-  //   const timer = setTimeout(() => {
-  //     try {
-  //       const map = L.map(mapContainerRef.current).setView([37.5665, 126.9780], 13);
-  //       mapRef.current = map;
-
-  //       // 타일 레이어 추가
-  //       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  //         attribution: '&copy; OpenStreetMap contributors',
-  //         maxZoom: 19
-  //       }).addTo(map);
-
-  //       //  로그인 여부 확인 후 위치 찾기
-  //       map.whenReady(() => {
-  //         if (isLoggedIn) {
-  //           map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true });
-  //         } else {
-  //           alert("로그인 후 위치 찾기가 가능합니다.");
-  //         }
-  //       });
-
-  //         // 위치 찾기 성공
-  //       map.on('locationfound', async (e) => {
-  //         const { lat, lng } = e.latlng;
-
-  //         // 서버에 위치 저장
-  //         if (user?._id) {
-  //           await fetch('/api/users/update-location', {
-  //             method: 'POST',
-  //             headers: { 'Content-Type': 'application/json' },
-  //             body: JSON.stringify({ userId: user._id, location: { lat, lng } })
-  //           });
-  //         }
-
-  //         onLocationChange(e.latlng);
-
-  //         // 기존 현재 위치 마커 제거
-  //         if (currentLocationMarkerRef.current) {
-  //           map.removeLayer(currentLocationMarkerRef.current);
-  //         }
-
-  //         // 새 현재 위치 마커 추가 (기본 아이콘)
-  //         currentLocationMarkerRef.current = L.marker(e.latlng)
-  //           .addTo(map)
-  //           .bindPopup('내 현재 위치')
-  //           .openPopup();
-
-  //       //   // 유저의 저장된 위치가 있으면 지도에 마커 찍고 이동
-  //       //   if (user?.location && mapRef.current) {
-  //       //     const { lat, lng } = user.location;
-  //       //     L.marker([lat, lng])
-  //       //       .addTo(mapRef.current)
-  //       //       .bindPopup('저장된 내 위치')
-  //       //       .openPopup();
-  //       //     mapRef.current.setView([lat, lng], 15);
-  //       //   }
-        
-  //       });
-
-  //       // 위치 찾기 실패
-  //       map.on('locationerror', function (e) {
-  //         console.error('Location error:', e);
-  //         alert(`위치 정보를 사용할 수 없습니다: ${e.message}`);
-  //       });
-
-  //     } catch (error) {
-  //       console.error('Map initialization error:', error);
-  //     }
-  //   }, 100);
-
-  //   // Cleanup
-  //   return () => {
-  //     clearTimeout(timer);
-  //     if (mapRef.current) {
-  //       mapRef.current.remove();
-  //       mapRef.current = null;
-  //     }
-  //     currentLocationMarkerRef.current = null;
-  //     savedMarkersRef.current = [];
-  //   };
-  // }, [loading, isLoggedIn, onLocationChange]);
 
   // 지도 초기화 (한 번만)
   useEffect(() => {
@@ -147,14 +65,15 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     map.on('locationfound', async (e) => {
       const { lat, lng } = e.latlng;
 
-      if (user?._id) {
+      if (user && user.id) {
         await fetch('/api/users/update-location', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user._id, location: { lat, lng } })
+          body: JSON.stringify({ userId: user.id, location: { lat, lng } })
         });
       }
 
+      setCurrentLatLng({ lat, lng });
       onLocationChange(e.latlng);
 
       if (currentLocationMarkerRef.current) {
@@ -179,7 +98,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
       currentLocationMarkerRef.current = null;
       savedMarkersRef.current = [];
     };
-  }, [loading, onLocationChange]);
+  }, [loading, onLocationChange, user]);
 
   // 저장된 주차 위치 마커 추가/업데이트
   useEffect(() => {
@@ -274,16 +193,35 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // return (
-  //   <div 
-  //     ref={mapContainerRef}
-  //     style={{ 
-  //       width: '100%', 
-  //       height: 'calc(100vh - 70px)', 
-  //       borderTop: '3px solid #2c3e50' 
-  //     }}
-  //   />
-  // );
+  const saveParkingLocation = async () => {
+    if (!user || !user.id) {  // 순서 변경
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    if (!currentLatLng) {
+      alert('저장할 위치가 없습니다.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/users/save-parking-location', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          location: currentLatLng,
+        }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      alert('주차 위치가 저장되었습니다 🚗');
+    } catch (err) {
+      alert('주차 위치 저장 실패');
+    }
+  };
+
   return (
   <>
     <div
@@ -316,9 +254,13 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     >
       위치 갱신
     </button>
+
+    {/* 주차 위치 저장 버튼 */}
+    <SaveButton onSave={saveParkingLocation}
+    isLoggedIn={!!user}
+    />
   </>
   );
-
 }
 
 export default MapComponent;

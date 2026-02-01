@@ -5,7 +5,7 @@ import {useThemeStore} from "./theme/themeStore";
 import ThemeToggle from "./theme/ThemeToggle";
 
 import MapComponent from './components/MapComponent';
-import SaveButton from './components/SaveButton';
+// import SaveButton from './components/SaveButton';
 import ImageModal from './components/ImageModal';
 import { readImage } from './utils/imageUtils';
 import Login from './components/Login';
@@ -104,7 +104,7 @@ function App() {
         onMarkerImageClick={openImageModal}
       />
       
-      <SaveButton onSave={handleSaveLocation} />
+      {/* <SaveButton onSave={handleSaveLocation} /> */}
       
       <ImageModal 
         isOpen={imageModalOpen} 
