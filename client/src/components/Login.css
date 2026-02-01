@@ -1,7 +1,7 @@
 /* 전체 컨테이너 */
 .login-container {
   position: fixed;
-  top: 10px;
+  top: 5px;
   right: 10px;
   z-index: 1000;
 }

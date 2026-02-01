@@ -78,6 +78,18 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+//지도에서 주차 위치를 유저 모델에 저장
+app.post('/api/users/update-location', async (req, res) => {
+  const { userId, location } = req.body;
+  try {
+    await User.findByIdAndUpdate(userId, { location });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 app.listen(port, () => {
     console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
 });

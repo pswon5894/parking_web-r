@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  location: { type: String, required: false },
+  location: {type: {lat: Number, lng: Number}, required: false},
   parktime: { type: Date, default: Date.now }
 });
 
