@@ -5,14 +5,17 @@
 # 웹 배포
 
 웹 페이지 vercel 배포
+
 서버 render 배포
 
 ## 개발 동기
 어머니와 이모가 차를 공유하는데, 주차 위치를 기억 못하거나 설명을 못해서
+
 주차 위치를 기록하고 공유하는 앱을 만들게 되었다
 
 ## UI/UX
 주차 위치가 마커로 표시된 지도 화면
+
 위치 기록 버튼과 로그인 버튼
 
 ## 프로젝트 구조
@@ -48,7 +51,7 @@ parking_web-r/
 -   **주요 기능:**
     -   Express 앱을 생성하고 포트(`5000`)를 설정합니다.
     -   `mongoose`를 사용하여 MongoDB Atlas 데이터베이스에 연결합니다.
-    -   `cors` 미들웨어를 설정하여 `localhost:3000` (React 앱)からの 요청을 허용합니다.
+    -   `cors` 미들웨어를 설정하여 `localhost:3000` (React 앱)에서의 요청을 허용합니다.
     -   `express.json()`, `express.urlencoded()` 미들웨어를 사용하여 POST 요청의 `body`를 파싱합니다.
     -   `express-session`과 `connect-mongo`를 사용하여 사용자 로그인 세션을 관리하고, 세션 정보를 MongoDB에 저장합니다.
     -   `/api/auth` 경로의 요청을 `routes/user.js` 파일로 라우팅합니다.
