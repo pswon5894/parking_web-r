@@ -64,8 +64,8 @@ app.use(session({
 // 정적 파일 제공 설정
 app.use(express.static(path.join(__dirname, '/')));
 
-// '/api/auth' 경로로 오는 모든 요청을 userRoutes로 전달
-app.use('/api/auth', userRoutes);
+// '/api/auth' 경로로 오는 모든 요청을 전달
+app.use('/api/auth', require('./routes/user'));
 
 // 에러 핸들링 미들웨어 (옵션)
 app.use((err, req, res, next) => {

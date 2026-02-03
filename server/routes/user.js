@@ -2,6 +2,9 @@
 const express = require('express');
 const router = require('express').Router();
 const User = require('../models/User');
+// const mongoose = require('mongoose');
+// const objectId = new mongoose.Types.ObjectId(userId);
+
 
 // 회원가입
 router.post('/register', async (req, res) => {
@@ -155,6 +158,65 @@ router.get('/logout', (req, res) => {
         res.clearCookie('connect.sid');
         res.redirect('/');
     });
+});
+
+// ✅ 현재 위치 업데이트
+router.post('/update-location', async (req, res) => {
+  try {
+    const { userId, location } = req.body;
+
+    if (!userId || !location) {
+      return res.status(400).json({ success: false, error: 'userId와 location이 필요합니다.' });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { location },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: '사용자를 찾을 수 없습니다.' });
+    }
+
+    res.json({ success: true, message: '위치가 업데이트되었습니다.', user });
+  } catch (error) {
+    res.status(500).json({ success: false, error: '위치 업데이트 중 오류 발생' });
+  }
+});
+
+// ✅ 주차 위치 저장
+router.post('/save-parking-location', async (req, res) => {
+  try {
+    const { userId, location } = req.body;
+
+    if (!userId || !location) {
+      return res.status(400).json({ success: false, error: 'userId와 location이 필요합니다.' });
+    }
+
+    // ✅ 문자열을 ObjectId로 변환
+    // const objectId = new ObjectId(userId);
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, error: '사용자를 찾을 수 없습니다.' });
+    }
+
+    // user.locations = user.locations || [];
+    // user.locations.push({
+    //   lat: location.lat,
+    //   lng: location.lng,
+    // });
+
+    user.location = {lat: location.lat, lng: location.lng }
+    user.parktime = new Date();
+
+    await user.save();
+
+    res.json({ success: true, message: '주차 위치가 저장되었습니다.', user });
+  } catch (error) {
+    res.status(500).json({ success: false, error: '주차 위치 저장 중 오류 발생' });
+  }
 });
 
 module.exports = router;

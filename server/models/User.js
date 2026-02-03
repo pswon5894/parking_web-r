@@ -10,9 +10,9 @@ const userSchema = new mongoose.Schema({
   imageBase64: { type: String, required: false },
 });
 
+// 비밀번호 해싱
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
-
   this.password = await bcrypt.hash(this.password, 10);
 });
 

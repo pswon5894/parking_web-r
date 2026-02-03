@@ -28,6 +28,8 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
 
   const [currentLatLng, setCurrentLatLng] = useState(null);
 
+  const serverUrl = `http://localhost:5000`
+
   console.log('MapComponent - user:', user); // ✅ 디버깅용
   console.log('MapComponent - loading:', loading); // ✅ 디버깅용
 
@@ -66,7 +68,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
       const { lat, lng } = e.latlng;
 
       if (user && user.id) {
-        await fetch('/api/users/update-location', {
+        await fetch(`${serverUrl}/api/auth/update-location`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user.id, location: { lat, lng } })
@@ -205,7 +207,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     }
 
     try {
-      const res = await fetch('/api/users/save-parking-location', {
+      const res = await fetch(`${serverUrl}/api/auth/save-parking-location`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
