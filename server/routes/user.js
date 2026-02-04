@@ -2,8 +2,6 @@
 const express = require('express');
 const router = require('express').Router();
 const User = require('../models/User');
-// const mongoose = require('mongoose');
-// const objectId = new mongoose.Types.ObjectId(userId);
 
 
 // 회원가입
@@ -91,19 +89,13 @@ router.post('/login', async (req, res) => {
         // 사용자 찾기
         const user = await User.findOne({ username });
         if (!user) {
-            return res.status(401).json({
-                success: false,
-                error: '아이디 또는 비밀번호가 올바르지 않습니다.'
-            });
+            return res.status(401).json({ success: false, error: '아이디 또는 비밀번호가 올바르지 않습니다.'});
         }
 
         // 비밀번호 확인
         const isPasswordValid = await user.comparePassword(password);
         if (!isPasswordValid) {
-            return res.status(401).json({
-                success: false,
-                error: '아이디 또는 비밀번호가 올바르지 않습니다.'
-            });
+            return res.status(401).json({ success: false, error: '아이디 또는 비밀번호가 올바르지 않습니다.'});
         }
 
         // 세션에 저장
@@ -124,10 +116,7 @@ router.post('/login', async (req, res) => {
 
     } catch (error) {
         console.error('❌ 로그인 오류:', error);
-        res.status(500).json({
-            success: false,
-            error: '로그인 중 오류가 발생했습니다.'
-        });
+        res.status(500).json({ success: false, error: '로그인 중 오류가 발생했습니다.' });
     }
 });
 
@@ -142,22 +131,25 @@ router.get('/me', (req, res) => {
             }
         });
     } else {
-        res.status(401).json({
-            success: false,
-            error: '로그인이 필요합니다.'
-        });
+        res.status(401).json({ success: false, error: '로그인이 필요합니다.' });
     }
 });
 
 // 로그아웃 처리
-router.get('/logout', (req, res) => {
+router.post('/logout', (req, res) => {
     req.session.destroy((err) => {
-        if (err) {
-            return res.redirect('/welcome');
-        }
-        res.clearCookie('connect.sid');
-        res.redirect('/');
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: '로그아웃 중 오류 발생'
+      });
+    }
+    res.clearCookie('connect.sid');
+    res.json({
+      success: true,
+      message: '로그아웃이 완료되었습니다.'
     });
+  });
 });
 
 // ✅ 현재 위치 업데이트
@@ -166,7 +158,7 @@ router.post('/update-location', async (req, res) => {
     const { userId, location } = req.body;
 
     if (!userId || !location) {
-      return res.status(400).json({ success: false, error: 'userId와 location이 필요합니다.' });
+      return res.status(400).json({success: false, error: 'userId와 location이 필요합니다.' });
     }
 
     const user = await User.findByIdAndUpdate(
@@ -181,11 +173,11 @@ router.post('/update-location', async (req, res) => {
 
     res.json({ success: true, message: '위치가 업데이트되었습니다.', user });
   } catch (error) {
-    res.status(500).json({ success: false, error: '위치 업데이트 중 오류 발생' });
+    res.status(500).json({success: false, error: '위치 업데이트 중 오류 발생'});
   }
 });
 
-// ✅ 주차 위치 저장
+//  주차 위치 저장
 router.post('/save-parking-location', async (req, res) => {
   try {
     const { userId, location } = req.body;
@@ -194,7 +186,7 @@ router.post('/save-parking-location', async (req, res) => {
       return res.status(400).json({ success: false, error: 'userId와 location이 필요합니다.' });
     }
 
-    // ✅ 문자열을 ObjectId로 변환
+    //  문자열을 ObjectId로 변환
     // const objectId = new ObjectId(userId);
 
     const user = await User.findById(userId);
@@ -208,14 +200,44 @@ router.post('/save-parking-location', async (req, res) => {
     //   lng: location.lng,
     // });
 
+    // 주차 위치 좌표 저장
     user.location = {lat: location.lat, lng: location.lng }
     user.parktime = new Date();
-
     await user.save();
 
     res.json({ success: true, message: '주차 위치가 저장되었습니다.', user });
   } catch (error) {
     res.status(500).json({ success: false, error: '주차 위치 저장 중 오류 발생' });
+  }
+});
+
+//마지막 주차 위치 조회
+router.get('/last-parking-location/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user || !user.location) {
+      return res.status(404).json({ 
+        success: false, 
+        message: '저장된 주차 위치가 없습니다.' 
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        lat: user.location.lat,
+        lng: user.location.lng,
+        timestamp: user.parktime
+      }
+    });
+  } catch (error) {
+    console.error('❌ 주차 위치 조회 오류:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: '서버 에러' 
+    });
   }
 });
 
