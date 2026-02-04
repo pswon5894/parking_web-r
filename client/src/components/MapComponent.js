@@ -62,20 +62,27 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
       const res = await fetch(`${serverUrl}/api/auth/last-parking-location/${user.id}`);
       if (!res.ok) return;
 
-      const data = await res.json();
+      const result = await res.json();
+      console.log('last parking location:', result);
+
+      if (!result.success || !result.data) return;
+
+      const { lat, lng, timestamp ,imageBase64 } = result.data;
+
+      if (typeof lat !== 'number' || typeof lng !== 'number') return;
 
       // 이미 같은 id가 추가되어 있다면 중복 방지
-      const alreadyAdded = savedMarkersRef.current.find(m => m.id === data.id);
+      const alreadyAdded = savedMarkersRef.current.find(m => m.id === 'last');
       if (alreadyAdded) return;
 
-      const marker = L.marker([data.lat, data.lng]).addTo(mapRef.current);
+      const marker = L.marker([lat, lng]).addTo(mapRef.current);
 
       const popupContent = `
         <div style="text-align: center; min-width: 220px;">
           <b style="font-size: 16px;">🚗 저장된 주차 위치</b><br/>
-          ${data.imageBase64 ? `
+          ${imageBase64 ? `
             <img 
-              src="${data.imageBase64}"
+              src="${imageBase64}"
               style="
                 width: 200px; 
                 height: 150px;
@@ -87,7 +94,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
             /><br/>
           ` : ''}
           <small style="color: #666; font-size: 12px;">
-            ${new Date(data.timestamp).toLocaleString('ko-KR', {
+            ${new Date(timestamp).toLocaleString('ko-KR', {
               year: 'numeric',
               month: '2-digit',
               day: '2-digit',
@@ -96,7 +103,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
             })}
           </small><br/>
           <a 
-            href="https://www.google.com/maps?q=${data.lat},${data.lng}"
+            href="https://www.google.com/maps?q=${lat},${lng}"
             target="_blank"
             rel="noopener noreferrer"
             style="
@@ -122,9 +129,12 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
       });
 
       savedMarkersRef.current.push({
-        id: data.id,
+        id: 'last',
         marker,
       });
+
+      mapRef.current.setView([lat, lng], 16);
+      
     } catch (err) {
       console.error('마지막 주차 위치 불러오기 실패', err);
     }

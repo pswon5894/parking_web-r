@@ -95,7 +95,7 @@ function App() {
     <div className={darkMode ? "app dark" : "App"}>
       <ThemeToggle />
       <Login />
-      <h2 class="main-h2">주차 위치 지도</h2>
+      <h2 className="main-h2">주차 위치 지도</h2>
       
       {/* ✅ markers와 openImageModal을 MapComponent에 전달 */}
       <MapComponent 
