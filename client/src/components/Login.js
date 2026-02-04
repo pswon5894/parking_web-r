@@ -119,6 +119,8 @@ function Login() {
             로그아웃
           </button>
         </div>
+
+        
       ) : (
         // 로그인 안된 상태
         <button className="login-btn" onClick={() => setShowLoginModal(true)}>

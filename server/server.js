@@ -8,8 +8,6 @@ const path = require('path');
 const bcrypt = require('bcrypt')
 require('dotenv').config();
 
-const userRoutes = require('./routes/user'); // user 라우터 import
-
 const app = express();
 const port = 5000;
 

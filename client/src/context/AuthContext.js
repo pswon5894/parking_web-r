@@ -1,4 +1,4 @@
-// src/con/SaveButton.js
+// src/context/AuthContext.js
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useAuthStore } from '../store/authStore';
 
@@ -89,6 +89,13 @@ export function AuthProvider({ children }) {
 
       const data = await response.json();
 
+      setUser({
+        id: data.user.id,
+        username: data.user.username,
+        latitude: data.user.latitude,
+        longitude: data.user.longitude
+      })
+
       if (!response.ok) {
         console.error('❌ 로그인 실패:', data.error);
         throw new Error(data.error || '로그인에 실패했습니다.');
@@ -116,9 +123,8 @@ export function AuthProvider({ children }) {
       });
 
       if (response.ok) {
-        console.log('✅ 로그아웃 성공');
         setUser(null);
-        setStoreLogout(); // ✅ zustand 업데이트
+        setStoreLogout(); //  zustand 업데이트
       } else {
         throw new Error('로그아웃 실패');
       }
@@ -127,7 +133,7 @@ export function AuthProvider({ children }) {
       console.error('로그아웃 에러:', error);
       // 에러가 나도 로컬에서는 로그아웃 처리
       setUser(null);
-      setStoreLogout(); // ✅ zustand 업데이트
+      setStoreLogout(); //  zustand 업데이트
     }
   };
 

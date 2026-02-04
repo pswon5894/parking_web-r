@@ -28,10 +28,10 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
 
   const [currentLatLng, setCurrentLatLng] = useState(null);
 
-  const serverUrl = `http://localhost:5000`
-
-  console.log('MapComponent - user:', user); // ✅ 디버깅용
-  console.log('MapComponent - loading:', loading); // ✅ 디버깅용
+  // 개발 환경에서는 http://localhost:5000/api, 프로덕션 환경에서는 배포된 서버 주소 사용
+  const serverUrl = process.env.NODE_ENV === 'production'
+    ? 'https://stock-portfolio-backtest.onrender.com'
+    : 'http://localhost:5000';
 
   const refreshLocation = () => {
   // if (!isLoggedIn) {
@@ -56,6 +56,81 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
 
     const map = L.map(mapContainerRef.current).setView([37.5665, 126.9780], 13);
     mapRef.current = map;
+
+    const fetchLastLocation = async () => {
+    try {
+      const res = await fetch(`${serverUrl}/api/auth/last-parking-location/${user.id}`);
+      if (!res.ok) return;
+
+      const data = await res.json();
+
+      // 이미 같은 id가 추가되어 있다면 중복 방지
+      const alreadyAdded = savedMarkersRef.current.find(m => m.id === data.id);
+      if (alreadyAdded) return;
+
+      const marker = L.marker([data.lat, data.lng]).addTo(mapRef.current);
+
+      const popupContent = `
+        <div style="text-align: center; min-width: 220px;">
+          <b style="font-size: 16px;">🚗 저장된 주차 위치</b><br/>
+          ${data.imageBase64 ? `
+            <img 
+              src="${data.imageBase64}"
+              style="
+                width: 200px; 
+                height: 150px;
+                object-fit: cover;
+                margin: 10px 0;
+                border-radius: 8px; 
+                cursor: pointer;
+              "
+            /><br/>
+          ` : ''}
+          <small style="color: #666; font-size: 12px;">
+            ${new Date(data.timestamp).toLocaleString('ko-KR', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </small><br/>
+          <a 
+            href="https://www.google.com/maps?q=${data.lat},${data.lng}"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="
+              display: inline-block;
+              margin-top: 8px;
+              padding: 8px 16px;
+              background-color: #4CAF50;
+              color: white;
+              text-decoration: none;
+              border-radius: 5px;
+              font-size: 14px;
+              font-weight: bold;
+            "
+          >
+            구글맵으로 열기 →
+          </a>
+        </div>
+      `;
+
+      marker.bindPopup(popupContent, {
+        maxWidth: 250,
+        className: 'custom-popup',
+      });
+
+      savedMarkersRef.current.push({
+        id: data.id,
+        marker,
+      });
+    } catch (err) {
+      console.error('마지막 주차 위치 불러오기 실패', err);
+    }
+  };
+
+  fetchLastLocation();
 
     // 타일 레이어
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -236,23 +311,8 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     />
 
     {/* 위치 갱신 버튼 */}
-    <button
+    <button className="location-refresh"
       onClick={refreshLocation}
-      style={{
-        position: 'absolute',
-        right: '20px',
-        bottom: '30px',
-        zIndex: 1000,
-        padding: '12px 16px',
-        borderRadius: '50px',
-        border: 'none',
-        backgroundColor: '#2c3e50',
-        color: 'white',
-        fontSize: '14px',
-        fontWeight: 'bold',
-        cursor: 'pointer',
-        boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-      }}
     >
       위치 갱신
     </button>
