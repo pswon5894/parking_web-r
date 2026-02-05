@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt')
 require('dotenv').config();
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 config = {
     DB_USERNAME: process.env.DB_USERNAME,
@@ -31,7 +31,7 @@ mongoose.connect(MONGODB_URI)
   });
 
 // // User 모델 import (반드시 mongoose 연결 후)
-// const User = require('./models/User');
+const User = require('./models/User');
 
 // CORS 설정
 app.use(cors({
