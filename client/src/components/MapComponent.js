@@ -183,7 +183,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
       currentLocationMarkerRef.current = null;
       savedMarkersRef.current = [];
     };
-  }, [loading, onLocationChange, user]);
+  }, [loading, onLocationChange, user, serverUrl]);
 
   // 저장된 주차 위치 마커 추가/업데이트
   useEffect(() => {
