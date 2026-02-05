@@ -170,13 +170,13 @@ function Login() {
               </button>
 
               <div className="modal-footer">
-                <a href="#" className="forgot-password">비밀번호를 잊으셨나요?</a>
-                <a href="#" className="signup-link" onClick={(e) => {
+                <button className="forgot-password">비밀번호를 잊으셨나요?</button>
+                <button className="signup-link" onClick={(e) => {
                     e.preventDefault(); switchToRegister();
                   }}
                 >
                   회원가입
-                </a>
+                </button>
               </div>
             </form>
           </div>
@@ -237,12 +237,12 @@ function Login() {
 
               <div className="modal-footer">
                 <span className="login-prompt">이미 계정이 있으신가요?</span>
-                <a href="#" className="signup-link" onClick={(e) => {
+                <button className="signup-link" onClick={(e) => {
                   e.preventDefault(); switchToLogin();
                 }}
                 >
                   로그인
-                </a>
+                </button>
               </div>
             </form>
           </div>

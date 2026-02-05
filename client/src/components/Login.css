@@ -203,6 +203,8 @@
 
 .forgot-password,
 .signup-link {
+  border: none;
+  background: none;
   font-size: 13px;
   color: #4CAF50;
   text-decoration: none;
