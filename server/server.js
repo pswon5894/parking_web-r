@@ -100,6 +100,6 @@ app.post('/api/users/update-location', async (req, res) => {
 });
 
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", function () {
     console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
 });
