@@ -8,7 +8,7 @@ const AuthContext = createContext();
 // // 개발 환경에서는 http://localhost:5000/api, 프로덕션 환경에서는 배포된 서버 주소 사용
   const serverUrl = process.env.NODE_ENV === 'production'
     ? 'https://parkingweb-r-production.up.railway.app'
-    : 'http://localhost:5000/api';
+    : 'http://localhost:5000';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
   // 현재 사용자 확인
   const checkAuth = async () => {
     try {
-      const response = await fetch(`${serverUrl}/auth/me`, {
+      const response = await fetch(`${serverUrl}/api/auth/me`, {
         method: 'GET',
         credentials: 'include' // 쿠키 포함 (중요!)
       });
@@ -48,7 +48,7 @@ export function AuthProvider({ children }) {
     try {
       console.log('📝 회원가입 시도:', username);
 
-      const response = await fetch(`${serverUrl}/auth/register`, {
+      const response = await fetch(`${serverUrl}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -80,7 +80,7 @@ export function AuthProvider({ children }) {
     try {
       console.log('🔐 로그인 시도:', username);
 
-      const response = await fetch(`${serverUrl}/auth/login`, {
+      const response = await fetch(`${serverUrl}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -118,7 +118,7 @@ export function AuthProvider({ children }) {
     try {
       console.log('👋 로그아웃 시도');
 
-      const response = await fetch(`${serverUrl}/auth/logout`, {
+      const response = await fetch(`${serverUrl}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include'
       });
