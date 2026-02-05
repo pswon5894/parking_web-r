@@ -97,7 +97,7 @@ function App() {
       <Login />
       <h2 className="main-h2">주차 위치 지도</h2>
       
-      {/* ✅ markers와 openImageModal을 MapComponent에 전달 */}
+      {/* markers와 openImageModal을 MapComponent에 전달 */}
       <MapComponent 
         onLocationChange={handleLocationChange}
         markers={markers}

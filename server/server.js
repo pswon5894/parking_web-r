@@ -34,8 +34,20 @@ mongoose.connect(MONGODB_URI)
 const User = require('./models/User');
 
 // CORS 설정
+const allowedOrigins = [
+  'http://localhost:3000',               // For local development
+  'https://parking-web-r.vercel.app'     // Your production Vercel frontend
+];
+
 app.use(cors({
-  origin: 'http://localhost:3000', // React 앱 주소
+  origin: function (origin, callback) {
+    // origin이 없거나(Postman 등) 목록에 포함된 경우 허용
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS 정책에 의해 차단되었습니다.'));
+    }
+  },
   credentials: true // 쿠키 허용
 }));
 

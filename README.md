@@ -29,7 +29,6 @@ parking_web-r/
 │   └── src/
 │       ├── components/ # 지도, 로그인 등 UI 컴포넌트
 │       ├── context/    # React Context API (인증 상태 관리)
-│       ├── store/      # Zustand 스토어 (상태 관리)
 │       ├── App.js      # 메인 애플리케이션 컴포넌트
 │       └── index.js    # 프론트엔드 시작점
 │
@@ -42,6 +41,34 @@ parking_web-r/
 ```
 
 ---
+
+parking_web-r/
+├── client/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── hooks/          # (신규) Custom Hooks 디렉토리
+│   │   │   ├── useMap.js
+│   │   │   ├── useUserLocation.js
+│   │   │   └── useParkingMarkers.js
+│   │   ├── services/       # (신규) API 서비스 모듈 디렉토리
+│   │   │   └── api.js
+│   │   ├── store/          # Zustand 스토어
+│   │   │   └── useAuthStore.js
+│   │   ├── ...
+│   └── .env                # (신규) 환경 변수 파일
+│
+└── server/
+    ├── controllers/        # (신규) 컨트롤러 계층
+    │   └── user.controller.js
+    ├── models/
+    │   └── User.js
+    ├── routes/
+    │   └── user.js
+    ├── services/           # (신규) 서비스 계층
+    │   └── user.service.js
+    ├── server.js
+    └── .env                # (신규) 환경 변수 파일
+```
 
 ##  백엔드 (Server)
 
