@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-import { useAuthStore } from '../store/authStore'; //  zustand store 가져오기
 import { useAuth } from '../context/AuthContext';
 
 import SaveButton from './SaveButton';
@@ -23,14 +22,14 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
   const savedMarkersRef = useRef([]); // 저장된 주차 위치 마커들
 
   const { loading, user } = useAuth(); //  loading 상태 가져오기
-  //  zustand에서 로그인 여부 가져오기
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   const [currentLatLng, setCurrentLatLng] = useState(null);
 
-  // 개발 환경에서는 http://localhost:5000/api, 프로덕션 환경에서는 배포된 서버 주소 사용
+  // const serverUrl = 'https://parkingweb-r-production.up.railway.app'
+  
+  // // 개발 환경에서는 http://localhost:5000/api, 프로덕션 환경에서는 배포된 서버 주소 사용
   const serverUrl = process.env.NODE_ENV === 'production'
-    ? 'https://stock-portfolio-backtest.onrender.com'
+    ? 'https://parkingweb-r-production.up.railway.app'
     : 'http://localhost:5000';
 
   const refreshLocation = () => {
@@ -50,7 +49,6 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
 
   // 지도 초기화 (한 번만)
   useEffect(() => {
-    if (loading) return;
     if (!mapContainerRef.current) return;
     if (mapRef.current) return;
 

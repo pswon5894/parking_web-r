@@ -188,7 +188,7 @@ function Login() {
         <div className="modal-overlay">
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2 class="modal-h2">회원가입</h2>
+              <h2 className="modal-h2">회원가입</h2>
               <button className="close-btn" onClick={handleCloseRegisterModal}>
                 ×
               </button>

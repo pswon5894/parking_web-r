@@ -17,7 +17,7 @@ function App() {
   const [currentLatLng, setCurrentLatLng] = useState(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState('');
-  const [markers, setMarkers] = useState([]); // ✅ 마커들 저장
+  const [markers, setMarkers] = useState([]); // 마커들 저장
 
   // Callback to receive current location from MapComponent
   const handleLocationChange = useCallback((latlng) => {
@@ -36,7 +36,7 @@ function App() {
     setImageModalOpen(false);
   }, []);
 
-  // ✅ Handle save button click from SaveButton component
+  //  Handle save button click from SaveButton component
   const handleSaveLocation = async (file) => {
     if (!currentLatLng) {
       alert('현재 위치를 확인 중입니다. 잠시만 기다려주세요');
@@ -47,10 +47,10 @@ function App() {
     const imageBase64 = file ? await readImage(file) : null;
     const { lat, lng } = currentLatLng;
 
-    // ✅ window에 함수 노출 (팝업에서 이미지 클릭 시 사용)
+    //  window에 함수 노출 (팝업에서 이미지 클릭 시 사용)
     window.openImageFromApp = openImageModal;
 
-    // ✅ 새 마커 데이터 생성
+    //  새 마커 데이터 생성
     const newMarker = {
       id: Date.now(), // 고유 ID
       lat,
@@ -59,7 +59,7 @@ function App() {
       timestamp: new Date().toISOString()
     };
 
-    // ✅ 마커 배열에 추가
+    //  마커 배열에 추가
     setMarkers(prevMarkers => [...prevMarkers, newMarker]);
 
     // 주소 가져오기 및 클립보드 복사

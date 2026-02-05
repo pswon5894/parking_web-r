@@ -1,16 +1,19 @@
 // src/context/AuthContext.js
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { useAuthStore } from '../store/authStore';
 
 const AuthContext = createContext();
 
 // API URL 설정
-const API_URL = 'http://localhost:5000/api';
+// const serverUrl = 'https://parkingweb-r-production.up.railway.app/api';
+// // 개발 환경에서는 http://localhost:5000/api, 프로덕션 환경에서는 배포된 서버 주소 사용
+  const serverUrl = process.env.NODE_ENV === 'production'
+    ? 'https://parkingweb-r-production.up.railway.app'
+    : 'http://localhost:5000/api';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { login: setStoreLogin, logout: setStoreLogout } = useAuthStore();
+//   const { login: setStoreLogin, logout: setStoreLogout } = useAuthStore();
 
 
   // 앱 시작 시 현재 사용자 확인
@@ -21,7 +24,7 @@ export function AuthProvider({ children }) {
   // 현재 사용자 확인
   const checkAuth = async () => {
     try {
-      const response = await fetch(`${API_URL}/auth/me`, {
+      const response = await fetch(`${serverUrl}/auth/me`, {
         method: 'GET',
         credentials: 'include' // 쿠키 포함 (중요!)
       });
@@ -29,7 +32,6 @@ export function AuthProvider({ children }) {
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
-        setStoreLogin(data.user); // ✅ zustand에도 반영
         console.log('✅ 자동 로그인:', data.user.username);
       } else {
         console.log('ℹ️ 로그인 필요');
@@ -46,7 +48,7 @@ export function AuthProvider({ children }) {
     try {
       console.log('📝 회원가입 시도:', username);
 
-      const response = await fetch(`${API_URL}/auth/register`, {
+      const response = await fetch(`${serverUrl}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -64,7 +66,7 @@ export function AuthProvider({ children }) {
 
       console.log('✅ 회원가입 성공:', data.user.username);
       setUser(data.user);
-      setStoreLogin(data.user); // ✅ zustand 업데이트
+    //   setStoreLogin(data.user); // ✅ zustand 업데이트
       return data.user;
 
     } catch (error) {
@@ -78,7 +80,7 @@ export function AuthProvider({ children }) {
     try {
       console.log('🔐 로그인 시도:', username);
 
-      const response = await fetch(`${API_URL}/auth/login`, {
+      const response = await fetch(`${serverUrl}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -103,7 +105,6 @@ export function AuthProvider({ children }) {
 
       console.log('✅ 로그인 성공:', data.user.username);
       setUser(data.user);
-      setStoreLogin(data.user); // ✅ zustand 업데이트
       return data.user;
 
     } catch (error) {
@@ -117,14 +118,13 @@ export function AuthProvider({ children }) {
     try {
       console.log('👋 로그아웃 시도');
 
-      const response = await fetch(`${API_URL}/auth/logout`, {
+      const response = await fetch(`${serverUrl}/auth/logout`, {
         method: 'POST',
         credentials: 'include'
       });
 
       if (response.ok) {
         setUser(null);
-        setStoreLogout(); //  zustand 업데이트
       } else {
         throw new Error('로그아웃 실패');
       }
@@ -133,7 +133,6 @@ export function AuthProvider({ children }) {
       console.error('로그아웃 에러:', error);
       // 에러가 나도 로컬에서는 로그아웃 처리
       setUser(null);
-      setStoreLogout(); //  zustand 업데이트
     }
   };
 
