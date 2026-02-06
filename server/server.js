@@ -5,7 +5,6 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo').default;
 const cors = require('cors');
 const path = require('path');
-const bcrypt = require('bcrypt')
 require('dotenv').config();
 
 const app = express();
@@ -37,7 +36,7 @@ const User = require('./models/User');
 const allowedOrigins = [
   'http://localhost:3000',               // For local development
   'https://parking-web-r.vercel.app',     // Your production Vercel frontend
-  'https://parkingweb-r-production.up.railway.app/'
+  'https://parkingweb-r-production.up.railway.app'
 ];
 
 app.use(cors({
@@ -84,11 +83,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, error: '서버 내부 오류가 발생했습니다.' });
 });
 
-app.get('/favicon.ico', (req, res) => res.status(204));
-
 // 로그인 페이지 (루트)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    // res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
 });
 
 //지도에서 주차 위치를 유저 모델에 저장
