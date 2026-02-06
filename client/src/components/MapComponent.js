@@ -40,6 +40,18 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
 
   if (!mapRef.current) return;
 
+  // 이전에 추가된 모든 저장된 주차 위치 마커들을 지도에서 제거
+  savedMarkersRef.current.forEach(m => {
+    mapRef.current.removeLayer(m.marker);
+  });
+  savedMarkersRef.current = []; // savedMarkersRef 배열 초기화
+
+  // 현재 위치 마커가 있다면 지도에서 제거하고 참조 초기화
+  if (currentLocationMarkerRef.current) {
+    mapRef.current.removeLayer(currentLocationMarkerRef.current);
+    currentLocationMarkerRef.current = null;
+  }
+
   mapRef.current.locate({
     setView: true,
     maxZoom: 16,
