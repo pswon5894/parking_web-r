@@ -5,8 +5,10 @@
 # 웹 배포
 
 웹 페이지 vercel 배포
+https://parking-web-r.vercel.app/
 
-서버 render 배포 (무료 프로젝트는 1개까지만)
+서버 render 배포
+
 서버 railway 배포
 https://parkingweb-r-production.up.railway.app
 
@@ -18,7 +20,7 @@ https://parkingweb-r-production.up.railway.app
 ## UI/UX
 주차 위치가 마커로 표시된 지도 화면
 
-위치 기록 버튼과 로그인 버튼
+로그인 버튼, 위치 갱신 버튼, 위치 저장 버튼
 
 ## 프로젝트 구조
 
@@ -41,33 +43,28 @@ parking_web-r/
 ```
 
 ---
-
+```
 parking_web-r/
 ├── client/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── hooks/          # (신규) Custom Hooks 디렉토리
-│   │   │   ├── useMap.js
-│   │   │   ├── useUserLocation.js
-│   │   │   └── useParkingMarkers.js
-│   │   ├── services/       # (신규) API 서비스 모듈 디렉토리
-│   │   │   └── api.js
-│   │   ├── store/          # Zustand 스토어
-│   │   │   └── useAuthStore.js
-│   │   ├── ...
-│   └── .env                # (신규) 환경 변수 파일
+│   └── src/
+│       ├── components/
+│       │   ├── Login.js                #로그인 폼과 관련된 UI 및 기능
+│       │   ├── MapComponent.js         #지도를 표시하고 상호작용
+│       │   ├── SaveButton.js
+│       │   └── useParkingMarkers.js
+│       ├── context/
+│       │   └── AuthContext.js
+│       └── theme/
+│           ├── themeStore.js
+│           └── ThemeToggle.js
 │
 └── server/
-    ├── controllers/        # (신규) 컨트롤러 계층
-    │   └── user.controller.js
     ├── models/
     │   └── User.js
     ├── routes/
     │   └── user.js
-    ├── services/           # (신규) 서비스 계층
-    │   └── user.service.js
-    ├── server.js
-    └── .env                # (신규) 환경 변수 파일
+    └── server.js
+
 ```
 
 ##  백엔드 (Server)
