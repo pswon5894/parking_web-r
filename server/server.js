@@ -37,6 +37,7 @@ const User = require('./models/User');
 const allowedOrigins = [
   'http://localhost:3000',               // For local development
   'https://parking-web-r.vercel.app'     // Your production Vercel frontend
+  'https://parkingweb-r-production.up.railway.app/'
 ];
 
 app.use(cors({

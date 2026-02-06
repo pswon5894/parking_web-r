@@ -4,7 +4,6 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import { useAuth } from '../context/AuthContext';
-
 import SaveButton from './SaveButton';
 
 // Fix for default icon issues with Webpack
@@ -22,7 +21,6 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
   const savedMarkersRef = useRef([]); // 저장된 주차 위치 마커들
 
   const { loading, user } = useAuth(); //  loading 상태 가져오기
-
   const [currentLatLng, setCurrentLatLng] = useState(null);
 
   // const serverUrl = 'https://parkingweb-r-production.up.railway.app'
@@ -302,7 +300,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     }
 
     try {
-      const res = await fetch(`${serverUrl}/api/auth/save-parking-location`, {
+      const res = await fetch(`${serverUrl}/api/auth/update-location`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
