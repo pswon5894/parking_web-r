@@ -1,11 +1,11 @@
 // src/components/MapComponent.js
-import React, { useEffect, useRef} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import { useAuth } from '../context/AuthContext';
 
-// import SaveButton from './SaveButton';
+import SaveButton from './SaveButton';
 
 // Fix for default icon issues with Webpack
 delete L.Icon.Default.prototype._getIconUrl;
@@ -23,7 +23,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
 
   const { loading, user } = useAuth(); //  loading 상태 가져오기
 
-  // const [currentLatLng, setCurrentLatLng] = useState(null);
+  const [currentLatLng, setCurrentLatLng] = useState(null);
 
   // const serverUrl = 'https://parkingweb-r-production.up.railway.app'
   
@@ -38,15 +38,14 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
   //   return;
   // }
 
-    if (!mapRef.current) return;
+  if (!mapRef.current) return;
 
-    mapRef.current.locate({
-      setView: true,
-      maxZoom: 16,
-      enableHighAccuracy: true,
-    });
-  
-  };
+  mapRef.current.locate({
+    setView: true,
+    maxZoom: 16,
+    enableHighAccuracy: true,
+  });
+};
 
   // 지도 초기화 (한 번만)
   useEffect(() => {
@@ -159,7 +158,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
         });
       }
 
-      // setCurrentLatLng({ lat, lng });
+      setCurrentLatLng({ lat, lng });
       onLocationChange(e.latlng);
 
       if (currentLocationMarkerRef.current) {
@@ -279,34 +278,34 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // const saveParkingLocation = async () => {
-  //   if (!user || !user.id) {  // 순서 변경
-  //     alert('로그인이 필요합니다.');
-  //     return;
-  //   }
+  const saveParkingLocation = async () => {
+    if (!user || !user.id) {  // 순서 변경
+      alert('로그인이 필요합니다.');
+      return;
+    }
 
-  //   if (!currentLatLng) {
-  //     alert('저장할 위치가 없습니다.');
-  //     return;
-  //   }
+    if (!currentLatLng) {
+      alert('저장할 위치가 없습니다.');
+      return;
+    }
 
-  //   try {
-  //     const res = await fetch(`${serverUrl}/api/auth/save-parking-location`, {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({
-  //         userId: user.id,
-  //         location: currentLatLng,
-  //       }),
-  //     });
+    try {
+      const res = await fetch(`${serverUrl}/api/auth/save-parking-location`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          location: currentLatLng,
+        }),
+      });
 
-  //     if (!res.ok) throw new Error();
+      if (!res.ok) throw new Error();
 
-  //     alert('주차 위치가 저장되었습니다 🚗');
-  //   } catch (err) {
-  //     alert('주차 위치 저장 실패');
-  //   }
-  // };
+      alert('주차 위치가 저장되었습니다 🚗');
+    } catch (err) {
+      alert('주차 위치 저장 실패');
+    }
+  };
 
   return (
   <>
@@ -325,6 +324,11 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     >
       위치 갱신
     </button>
+
+    {/* 주차 위치 저장 버튼 */}
+    <SaveButton onSave={saveParkingLocation}
+    isLoggedIn={!!user}
+    />
   </>
   );
 }

@@ -4,7 +4,7 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 const AuthContext = createContext();
 
 // API URL 설정
-// const serverUrl = 'https://parkingweb-r-production.up.railway.app/api';
+// const serverUrl = 'https://parkingweb-r-production.up.railway.app';
 // // 개발 환경에서는 http://localhost:5000/api, 프로덕션 환경에서는 배포된 서버 주소 사용
   const serverUrl = process.env.NODE_ENV === 'production'
     ? 'https://parkingweb-r-production.up.railway.app'
@@ -13,8 +13,6 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-//   const { login: setStoreLogin, logout: setStoreLogout } = useAuthStore();
-
 
   // 앱 시작 시 현재 사용자 확인
   useEffect(() => {
@@ -66,7 +64,6 @@ export function AuthProvider({ children }) {
 
       console.log('✅ 회원가입 성공:', data.user.username);
       setUser(data.user);
-    //   setStoreLogin(data.user); // ✅ zustand 업데이트
       return data.user;
 
     } catch (error) {

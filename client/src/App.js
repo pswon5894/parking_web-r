@@ -38,6 +38,8 @@ function App() {
 
   //  Handle save button click from SaveButton component
   const handleSaveLocation = async (file) => {
+
+    
     if (!currentLatLng) {
       alert('현재 위치를 확인 중입니다. 잠시만 기다려주세요');
       return;
@@ -59,7 +61,7 @@ function App() {
       timestamp: new Date().toISOString()
     };
 
-    //  마커 배열에 추가
+    //  마커 배열에 추가파이
     setMarkers(prevMarkers => [...prevMarkers, newMarker]);
 
     // 주소 가져오기 및 클립보드 복사

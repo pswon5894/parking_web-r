@@ -1,8 +1,7 @@
 // src/components/SaveButton.js
 import React, { useRef } from 'react';
 
-function SaveButton({ onSave, isLoggedIn  }) 
-{
+function SaveButton({ onSave, isLoggedIn  }) {
   const fileInputRef = useRef(null);
 
   const handleButtonClick = () => {
