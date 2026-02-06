@@ -7,7 +7,8 @@ const AuthContext = createContext();
 // const serverUrl = 'https://parkingweb-r-production.up.railway.app';
 // // 개발 환경에서는 http://localhost:5000/api, 프로덕션 환경에서는 배포된 서버 주소 사용
   const serverUrl = process.env.NODE_ENV === 'production'
-    ? 'https://parkingweb-r-production.up.railway.app'
+    // ? 'https://parkingweb-r-production.up.railway.app'
+    ? 'https://parking-web-r.onrender.com'
     : 'http://localhost:5000';
 
 export function AuthProvider({ children }) {
