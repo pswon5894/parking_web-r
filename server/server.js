@@ -85,8 +85,8 @@ app.use((err, req, res, next) => {
 
 // 로그인 페이지 (루트)
 app.get('/', (req, res) => {
-    // res.sendFile(path.join(__dirname, 'index.html'));
-    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
+    // res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
 });
 
 //지도에서 주차 위치를 유저 모델에 저장
