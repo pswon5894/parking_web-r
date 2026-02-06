@@ -84,14 +84,12 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, error: '서버 내부 오류가 발생했습니다.' });
 });
 
-// 로그인 페이지 (루트)
-// app.get('/', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'index.html'));
-// });
-app.get('/', (req, res) => {
-  res.send('서버 살아있음');
-});
+app.get('/favicon.ico', (req, res) => res.status(204));
 
+// 로그인 페이지 (루트)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 //지도에서 주차 위치를 유저 모델에 저장
 app.post('/api/users/update-location', async (req, res) => {
