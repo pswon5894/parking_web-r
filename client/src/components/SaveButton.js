@@ -5,11 +5,7 @@ function SaveButton({ onSave, isLoggedIn  }) {
   const fileInputRef = useRef(null);
 
   const handleButtonClick = () => {
-    // if (!isLoggedIn) {
-    //   alert('로그인 후 주차 위치를 저장할 수 있습니다.');
-    //   return;
-    // }
-    // onSave will be called with the file from the input
+
     if (onSave) {
         onSave(fileInputRef.current.files[0]);
     }

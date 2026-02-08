@@ -4,7 +4,6 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import { useAuth } from '../context/AuthContext';
-import SaveButton from './SaveButton';
 
 // Fix for default icon issues with Webpack
 delete L.Icon.Default.prototype._getIconUrl;
@@ -20,22 +19,11 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
   const currentLocationMarkerRef = useRef(null); // 현재 위치 마커
   const savedMarkersRef = useRef([]); // 저장된 주차 위치 마커들
 
-  const { loading, user } = useAuth(); //  loading 상태 가져오기
-  const [currentLatLng, setCurrentLatLng] = useState(null);
-
-  // const serverUrl = 'https://parkingweb-r-production.up.railway.app'
-  
-  // // 개발 환경에서는 http://localhost:5000/api, 프로덕션 환경에서는 배포된 서버 주소 사용
-  const serverUrl = process.env.NODE_ENV === 'production'
-    // ? 'https://parkingweb-r-production.up.railway.app'
-    ? 'https://parking-web-r.onrender.com'
-    : 'http://localhost:5000';
+  const { loading, user, serverUrl } = useAuth(); //  loading 상태 가져오기
+  // const [currentLatLng, setCurrentLatLng] = useState(null);
+  const [setCurrentLatLng] = useState(null);
 
   const refreshLocation = () => {
-  // if (!isLoggedIn) {
-  //   alert('로그인 후 위치 갱신이 가능합니다.');
-  //   return;
-  // }
 
   if (!mapRef.current) return;
 
@@ -289,35 +277,6 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const saveParkingLocation = async () => {
-    if (!user || !user.id) {  // 순서 변경
-      alert('로그인이 필요합니다.');
-      return;
-    }
-
-    if (!currentLatLng) {
-      alert('저장할 위치가 없습니다.');
-      return;
-    }
-
-    try {
-      const res = await fetch(`${serverUrl}/api/auth/update-location`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
-          location: currentLatLng,
-        }),
-      });
-
-      if (!res.ok) throw new Error();
-
-      alert('주차 위치가 저장되었습니다 🚗');
-    } catch (err) {
-      alert('주차 위치 저장 실패');
-    }
-  };
-
   return (
   <>
     <div
@@ -337,9 +296,6 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     </button>
 
     {/* 주차 위치 저장 버튼 */}
-    <SaveButton onSave={saveParkingLocation}
-    isLoggedIn={!!user}
-    />
   </>
   );
 }

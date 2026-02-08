@@ -9,10 +9,12 @@ import SaveButton from './components/SaveButton';
 import ImageModal from './components/ImageModal';
 import { readImage } from './utils/imageUtils';
 import Login from './components/Login';
+import { useAuth } from './context/AuthContext'; //  추가
 
 function App() {
 
   const darkMode = useThemeStore((state) => state.darkMode);
+  const { user, serverUrl } = useAuth(); //  추가
 
   const [currentLatLng, setCurrentLatLng] = useState(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -39,7 +41,12 @@ function App() {
   //  Handle save button click from SaveButton component
   const handleSaveLocation = async (file) => {
 
-    
+    // 로그인 체크
+    if (!user || !user.id) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
     if (!currentLatLng) {
       alert('현재 위치를 확인 중입니다. 잠시만 기다려주세요');
       return;
@@ -66,6 +73,18 @@ function App() {
 
     // 주소 가져오기 및 클립보드 복사
     try {
+        // ⭐ MapComponent의 saveParkingLocation 로직 추가
+        const serverRes = await fetch(`${serverUrl}/api/auth/update-location`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user.id,
+            location: { lat, lng },
+          }),
+        });
+
+        if (!serverRes.ok) throw new Error('서버 저장 실패');
+
       // 리버스 지오코딩 (좌표 → 주소)
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
@@ -75,7 +94,6 @@ function App() {
 
       // 구글 맵 URL 생성
       const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
-
       // 클립보드에 복사
       await navigator.clipboard.writeText(googleMapsUrl);
 
