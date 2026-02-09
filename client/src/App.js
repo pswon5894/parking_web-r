@@ -48,7 +48,7 @@ function App() {
     }
 
     if (!currentLatLng) {
-      alert('현재 위치를 확인 중입니다. 잠시만 기다려주세요');
+      alert('위치 갱신 버튼을 먼저 눌러주세요');
       return;
     }
 

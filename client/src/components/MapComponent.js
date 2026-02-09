@@ -21,7 +21,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
 
   const { loading, user, serverUrl } = useAuth(); //  loading 상태 가져오기
   // const [currentLatLng, setCurrentLatLng] = useState(null);
-  const [setCurrentLatLng] = useState(null);
+  const [, setCurrentLatLng] = useState(null);
 
   const refreshLocation = () => {
 
@@ -182,7 +182,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
       currentLocationMarkerRef.current = null;
       savedMarkersRef.current = [];
     };
-  }, [loading, onLocationChange, user, serverUrl]);
+  }, [loading, onLocationChange, user, serverUrl, setCurrentLatLng]);
 
   // 저장된 주차 위치 마커 추가/업데이트
   useEffect(() => {

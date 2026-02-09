@@ -8,6 +8,7 @@
 https://parking-web-r.vercel.app/
 
 서버 render 배포
+https://parking-web-r.onrender.com
 
 서버 railway 배포
 https://parkingweb-r-production.up.railway.app
