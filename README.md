@@ -7,11 +7,8 @@
 웹 페이지 vercel 배포
 https://parking-web-r.vercel.app/
 
-서버 render 배포
+백엔드 render 배포
 https://parking-web-r.onrender.com
-
-서버 railway 배포
-https://parkingweb-r-production.up.railway.app
 
 ## 개발 동기
 어머니와 이모가 차를 공유하는데, 주차 위치를 기억 못하거나 설명을 못해서
