@@ -152,31 +152,6 @@ router.post('/logout', (req, res) => {
   });
 });
 
-// // 현재 위치 업데이트
-// router.post('/update-location', async (req, res) => {
-//   try {
-//     const { userId, location } = req.body;
-
-//     if (!userId || !location) {
-//       return res.status(400).json({success: false, error: 'userId와 location이 필요합니다.' });
-//     }
-
-//     const user = await User.findByIdAndUpdate(
-//       userId,
-//       { location },
-//       { new: true }
-//     );
-
-//     if (!user) {
-//       return res.status(404).json({ success: false, error: '사용자를 찾을 수 없습니다.' });
-//     }
-
-//     res.json({ success: true, message: '위치가 업데이트되었습니다.', user });
-//   } catch (error) {
-//     res.status(500).json({success: false, error: '위치 업데이트 중 오류 발생'});
-//   }
-// });
-
 //  주차 위치 저장
 router.post('/update-location', async (req, res) => {
   try {

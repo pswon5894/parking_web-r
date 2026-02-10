@@ -101,6 +101,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     const map = L.map(mapContainerRef.current).setView([37.5665, 126.9780], 13);
     mapRef.current = map;
 
+    //서버에서 마지막 위치 가져오기, fetch 함수는 기본적으로 http get 요청, method 옵션을 지정안하면 get 동작
     const fetchLastLocation = async () => {
     try {
       const res = await fetch(`${serverUrl}/api/auth/last-parking-location/${user.id}`);
@@ -152,6 +153,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     map.on('locationfound', async (e) => {
       const { lat, lng } = e.latlng;
 
+      //서버에 위치 업데이트 기록
       if (user && user.id) {
         await fetch(`${serverUrl}/api/auth/update-location`, {
           method: 'POST',
@@ -167,9 +169,20 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
         map.removeLayer(currentLocationMarkerRef.current);
       }
 
+      const popupContent = createPopupContent(
+        lat,
+        lng,
+        Date.now(),
+        null,
+        '📍 내 현재 위치'
+      );
+
       currentLocationMarkerRef.current = L.marker([lat, lng])
         .addTo(map)
-        .bindPopup('내 현재 위치')
+        .bindPopup(popupContent, {
+          maxWidth: 250,
+          className: 'custom-popup',
+        })
         .openPopup();
     });
 
