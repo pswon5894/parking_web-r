@@ -127,7 +127,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
       marker.bindPopup(popupContent, {
         maxWidth: 250,
         className: 'custom-popup',
-      });
+      }).openPopup();;
 
       savedMarkersRef.current.push({
         id: 'last',
@@ -174,7 +174,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
         lng,
         Date.now(),
         null,
-        '📍 내 현재 위치'
+        ' 내 현재 위치'
       );
 
       currentLocationMarkerRef.current = L.marker([lat, lng])
