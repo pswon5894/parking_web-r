@@ -6,6 +6,8 @@ import 'leaflet/dist/leaflet.css';
 import { useAuth } from '../context/AuthContext';
 import { createPopupContent } from '../utils/popupUtils';
 
+import { useFetchLastLocation } from '../hooks/useFetchLastLocation';
+
 
 // Fix for default icon issues with Webpack
 delete L.Icon.Default.prototype._getIconUrl;
@@ -52,50 +54,51 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
     if (!mapContainerRef.current) return;
     if (mapRef.current) return;
 
+    //지도 생성
     const map = L.map(mapContainerRef.current).setView([37.5665, 126.9780], 13);
     mapRef.current = map;
 
     //서버에서 마지막 위치 가져오기, fetch 함수는 기본적으로 http get 요청, method 옵션을 지정안하면 get 동작
-    const fetchLastLocation = async () => {
-    try {
-      const res = await fetch(`${serverUrl}/api/auth/last-parking-location/${user.id}`);
-      if (!res.ok) return;
+  //   const fetchLastLocation = async () => {
+  //   try {
+  //     const res = await fetch(`${serverUrl}/api/auth/last-parking-location/${user.id}`);
+  //     if (!res.ok) return;
 
-      const result = await res.json();
-      console.log('last parking location:', result);
+  //     const result = await res.json();
+  //     console.log('last parking location:', result);
 
-      if (!result.success || !result.data) return;
+  //     if (!result.success || !result.data) return;
 
-      const { lat, lng, timestamp ,imageBase64 } = result.data;
+  //     const { lat, lng, timestamp ,imageBase64 } = result.data;
 
-      if (typeof lat !== 'number' || typeof lng !== 'number') return;
+  //     if (typeof lat !== 'number' || typeof lng !== 'number') return;
 
-      // 이미 같은 id가 추가되어 있다면 중복 방지
-      const alreadyAdded = savedMarkersRef.current.find(m => m.id === 'last');
-      if (alreadyAdded) return;
+  //     // 이미 같은 id가 추가되어 있다면 중복 방지
+  //     const alreadyAdded = savedMarkersRef.current.find(m => m.id === 'last');
+  //     if (alreadyAdded) return;
 
-      const marker = L.marker([lat, lng]).addTo(mapRef.current);
+  //     const marker = L.marker([lat, lng]).addTo(mapRef.current);
 
-      const popupContent = createPopupContent(lat, lng, timestamp, imageBase64, '🚗 저장된 주차 위치');
+  //     const popupContent = createPopupContent(lat, lng, timestamp, imageBase64, '🚗 저장된 주차 위치');
 
-      marker.bindPopup(popupContent, {
-        maxWidth: 250,
-        className: 'custom-popup',
-      }).openPopup();;
+  //     marker.bindPopup(popupContent, {
+  //       maxWidth: 250,
+  //       className: 'custom-popup',
+  //     }).openPopup();;
 
-      savedMarkersRef.current.push({
-        id: 'last',
-        marker,
-      });
+  //     savedMarkersRef.current.push({
+  //       id: 'last',
+  //       marker,
+  //     });
 
-      mapRef.current.setView([lat, lng], 16);
+  //     mapRef.current.setView([lat, lng], 16);
       
-    } catch (err) {
-      console.error('마지막 주차 위치 불러오기 실패', err);
-    }
-  };
+  //   } catch (err) {
+  //     console.error('마지막 주차 위치 불러오기 실패', err);
+  //   }
+  // };
 
-  fetchLastLocation();
+  // fetchLastLocation();
 
     // 타일 레이어
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -153,6 +156,11 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
       savedMarkersRef.current = [];
     };
   }, [loading, onLocationChange, user, serverUrl, setCurrentLatLng]);
+
+
+  // 마지막 주차 위치 가져오기
+  useFetchLastLocation(mapRef, savedMarkersRef, user, serverUrl);
+
 
   // 저장된 주차 위치 마커 추가/업데이트
   useEffect(() => {
