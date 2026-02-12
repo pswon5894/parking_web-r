@@ -1,11 +1,13 @@
 // src/components/MapComponent.js
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef} from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import { useAuth } from '../context/AuthContext';
 import { createPopupContent } from '../utils/popupUtils';
 
+import { useMapInitialization} from '../hooks/useMapInitialization';
+import { useMapLocation } from '../hooks/useMapLocation';
 import { useFetchLastLocation } from '../hooks/useFetchLastLocation';
 
 
@@ -23,144 +25,33 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
   const currentLocationMarkerRef = useRef(null); // 현재 위치 마커
   const savedMarkersRef = useRef([]); // 저장된 주차 위치 마커들
 
-  const { loading, user, serverUrl } = useAuth(); //  loading 상태 가져오기
-  // const [currentLatLng, setCurrentLatLng] = useState(null);
-  const [, setCurrentLatLng] = useState(null);
+  const { user, serverUrl } = useAuth(); //  loading 상태 가져오기
+  // const [, setCurrentLatLng] = useState(null);
 
-  const refreshLocation = () => {
-    if (!mapRef.current) return;
-    
-    // 이전에 추가된 모든 저장된 주차 위치 마커들을 지도에서 제거
-    savedMarkersRef.current.forEach(m => {
-      mapRef.current.removeLayer(m.marker);
-    });
-    savedMarkersRef.current = []; // savedMarkersRef 배열 초기화
+  // 현재 위치 갱신
+  // useMapLocation 훅 사용!
+  const {
+    refreshLocation,
+    handleLocationFound,
+    handleLocationError
+  } = useMapLocation(
+    mapRef,
+    currentLocationMarkerRef,
+    onLocationChange,
+    user,
+    serverUrl
+  );
 
-    // 현재 위치 마커가 있다면 지도에서 제거하고 참조 초기화
-    if (currentLocationMarkerRef.current) {
-      mapRef.current.removeLayer(currentLocationMarkerRef.current);
-      currentLocationMarkerRef.current = null;
-    }
-
-    mapRef.current.locate({
-      setView: true,
-      maxZoom: 16,
-      enableHighAccuracy: true,
-    });
-  };
-
-  // 지도 초기화 (한 번만)
-  useEffect(() => {
-    if (!mapContainerRef.current) return;
-    if (mapRef.current) return;
-
-    //지도 생성
-    const map = L.map(mapContainerRef.current).setView([37.5665, 126.9780], 13);
-    mapRef.current = map;
-
-    //서버에서 마지막 위치 가져오기, fetch 함수는 기본적으로 http get 요청, method 옵션을 지정안하면 get 동작
-  //   const fetchLastLocation = async () => {
-  //   try {
-  //     const res = await fetch(`${serverUrl}/api/auth/last-parking-location/${user.id}`);
-  //     if (!res.ok) return;
-
-  //     const result = await res.json();
-  //     console.log('last parking location:', result);
-
-  //     if (!result.success || !result.data) return;
-
-  //     const { lat, lng, timestamp ,imageBase64 } = result.data;
-
-  //     if (typeof lat !== 'number' || typeof lng !== 'number') return;
-
-  //     // 이미 같은 id가 추가되어 있다면 중복 방지
-  //     const alreadyAdded = savedMarkersRef.current.find(m => m.id === 'last');
-  //     if (alreadyAdded) return;
-
-  //     const marker = L.marker([lat, lng]).addTo(mapRef.current);
-
-  //     const popupContent = createPopupContent(lat, lng, timestamp, imageBase64, '🚗 저장된 주차 위치');
-
-  //     marker.bindPopup(popupContent, {
-  //       maxWidth: 250,
-  //       className: 'custom-popup',
-  //     }).openPopup();;
-
-  //     savedMarkersRef.current.push({
-  //       id: 'last',
-  //       marker,
-  //     });
-
-  //     mapRef.current.setView([lat, lng], 16);
-      
-  //   } catch (err) {
-  //     console.error('마지막 주차 위치 불러오기 실패', err);
-  //   }
-  // };
-
-  // fetchLastLocation();
-
-    // 타일 레이어
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19,
-    }).addTo(map);
-
-    // 현재 위치 탐색 성공
-    map.on('locationfound', async (e) => {
-      const { lat, lng } = e.latlng;
-
-      //서버에 위치 업데이트 기록
-      if (user && user.id) {
-        await fetch(`${serverUrl}/api/auth/update-location`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id, location: { lat, lng } })
-        });
-      }
-
-      setCurrentLatLng({ lat, lng });
-      onLocationChange(e.latlng);
-
-      if (currentLocationMarkerRef.current) {
-        map.removeLayer(currentLocationMarkerRef.current);
-      }
-
-      const popupContent = createPopupContent(
-        lat,
-        lng,
-        Date.now(),
-        null,
-        ' 내 현재 위치'
-      );
-
-      currentLocationMarkerRef.current = L.marker([lat, lng])
-        .addTo(map)
-        .bindPopup(popupContent, {
-          maxWidth: 250,
-          className: 'custom-popup',
-        })
-        .openPopup();
-    });
-
-    // 위치 탐색 실패
-    map.on('locationerror', (e) => {
-      console.error(e);
-      alert(`위치 정보를 사용할 수 없습니다: ${e.message}`);
-    });
-
-    return () => {
-      map.remove();
-      mapRef.current = null;
-      currentLocationMarkerRef.current = null;
-      savedMarkersRef.current = [];
-    };
-  }, [loading, onLocationChange, user, serverUrl, setCurrentLatLng]);
-
+  //지도 초기화 훅 사용
+  useMapInitialization(
+    mapContainerRef,
+    mapRef,
+    handleLocationFound,  //  훅에서 받아온 함수!
+    handleLocationError   //  훅에서 받아온 함수!
+  );
 
   // 마지막 주차 위치 가져오기
   useFetchLastLocation(mapRef, savedMarkersRef, user, serverUrl);
-
 
   // 저장된 주차 위치 마커 추가/업데이트
   useEffect(() => {

@@ -9,12 +9,11 @@ import SaveButton from './components/SaveButton';
 import ImageModal from './components/ImageModal';
 import { readImage } from './utils/imageUtils';
 import Login from './components/Login';
-import { useAuth } from './context/AuthContext'; //  추가
-
+import { useAuth } from './context/AuthContext';
 function App() {
 
   const darkMode = useThemeStore((state) => state.darkMode);
-  const { user, serverUrl } = useAuth(); //  추가
+  const { user, serverUrl } = useAuth();
 
   const [currentLatLng, setCurrentLatLng] = useState(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -73,7 +72,7 @@ function App() {
 
     // 주소 가져오기 및 클립보드 복사
     try {
-        // ⭐ MapComponent의 saveParkingLocation 로직 추가
+        //  MapComponent의 saveParkingLocation 로직 추가
         const serverRes = await fetch(`${serverUrl}/api/auth/update-location`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
