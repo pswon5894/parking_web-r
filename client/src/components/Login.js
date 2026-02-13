@@ -1,7 +1,8 @@
 // client/src/components/Login.js
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useLoginModal } from '../hooks/useLoginModal';
+import { useRegisterModal } from '../hooks/useRegisterModal';
 import './Login.css';
 
 function Login() {
@@ -19,15 +20,26 @@ function Login() {
     handleCloseLoginModal,
     openLoginModal,
   } = useLoginModal();
-  
-  // 회원가입 상태
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [registerUsername, setRegisterUsername] = useState('');
-  const [registerPassword, setRegisterPassword] = useState('');
-  const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState('');
-  const [registerError, setRegisterError] = useState('');
 
-  const { user, loading, logout, register } = useAuth(); //  register 추가
+  // 회원가입 모달 훅
+  const{
+    showRegisterModal,
+    registerUsername,
+    registerPassword,
+    registerPasswordConfirm,
+    registerError,
+
+    setRegisterUsername,
+    setRegisterPassword,
+    setRegisterPasswordConfirm,
+
+    handleRegisterSubmit,
+    handleCloseRegisterModal,
+    openRegisterModal,
+  } = useRegisterModal();
+  
+
+  const { user, loading, logout } = useAuth(); //  register 추가
 
   //  ESC 키로 모달 닫기
   useEffect(() => {
@@ -40,60 +52,21 @@ function Login() {
 
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [showLoginModal, showRegisterModal, handleCloseLoginModal]);
+  }, [showLoginModal, showRegisterModal, handleCloseLoginModal, handleCloseRegisterModal]);
 
   
-  //  회원가입 제출
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    setRegisterError('');
-
-    // 비밀번호 확인 검증
-    if (registerPassword !== registerPasswordConfirm) {
-      setRegisterError('비밀번호가 일치하지 않습니다.');
-      return;
-    }
-
-    // 비밀번호 길이 검증
-    if (registerPassword.length < 6) {
-      setRegisterError('비밀번호는 최소 6자 이상이어야 합니다.');
-      return;
-    }
-
-    try {
-      await register(registerUsername, registerPassword);
-      setShowRegisterModal(false);
-      setRegisterUsername('');
-      setRegisterPassword('');
-      setRegisterPasswordConfirm('');
-      alert('회원가입이 완료되었습니다!');
-    } catch (err) {
-      setRegisterError(err.message || '회원가입에 실패했습니다.');
-    }
-  };
-
-
-
-  //  회원가입 모달 닫기
-  const handleCloseRegisterModal = () => {
-    setShowRegisterModal(false);
-    setRegisterError('');
-    setRegisterUsername('');
-    setRegisterPassword('');
-    setRegisterPasswordConfirm('');
-  };
 
   //  로그인 ↔ 회원가입 전환
   const switchToRegister = () => {
     handleCloseLoginModal();
-    setShowRegisterModal(true);
+    openRegisterModal();
     // setError(''); // handleCloseLoginModal(); 안에있어
   };
 
   const switchToLogin = () => {
-    setShowRegisterModal(false);
+    handleCloseRegisterModal();
     openLoginModal();
-    setRegisterError('');
+    // setRegisterError(''); // handleCloseRegisterModal(); 안에있음
   };
 
   if (loading) {
