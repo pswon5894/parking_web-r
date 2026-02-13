@@ -26,7 +26,6 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
   const savedMarkersRef = useRef([]); // 저장된 주차 위치 마커들
 
   const { user, serverUrl } = useAuth(); //  loading 상태 가져오기
-  // const [, setCurrentLatLng] = useState(null);
 
   // 현재 위치 갱신
   // useMapLocation 훅 사용!
@@ -51,7 +50,7 @@ function MapComponent({ onLocationChange, markers = [], onMarkerImageClick }) {
   );
 
   // 마지막 주차 위치 가져오기
-  useFetchLastLocation(mapRef, savedMarkersRef, user, serverUrl);
+  useMapLastLocation(mapRef, savedMarkersRef, user, serverUrl);
 
   // 저장된 주차 위치 마커 추가/업데이트
   useEffect(() => {

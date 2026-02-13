@@ -1,14 +1,24 @@
 // client/src/components/Login.js
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useLoginModal } from '../hooks/useLoginModal';
 import './Login.css';
 
 function Login() {
-  // 로그인 상태
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [showLoginModal, setShowLoginModal] = useState(false); //  이름 변경
+  
+
+  // 로그인 모달 훅
+  const {
+    showLoginModal,
+    username,
+    password,
+    error,
+    setUsername,
+    setPassword,
+    handleLoginSubmit,
+    handleCloseLoginModal,
+    openLoginModal,
+  } = useLoginModal();
   
   // 회원가입 상태
   const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -17,7 +27,7 @@ function Login() {
   const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState('');
   const [registerError, setRegisterError] = useState('');
 
-  const { user, loading, login, logout, register } = useAuth(); //  register 추가
+  const { user, loading, logout, register } = useAuth(); //  register 추가
 
   //  ESC 키로 모달 닫기
   useEffect(() => {
@@ -30,22 +40,9 @@ function Login() {
 
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [showLoginModal, showRegisterModal]);
+  }, [showLoginModal, showRegisterModal, handleCloseLoginModal]);
 
-  //  로그인 제출
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    try {
-      await login(username, password);
-      setShowLoginModal(false);
-      setUsername('');
-      setPassword('');
-    } catch (err) {
-      setError(err.message || '로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.');
-    }
-  };
-
+  
   //  회원가입 제출
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
@@ -75,13 +72,7 @@ function Login() {
     }
   };
 
-  //  로그인 모달 닫기
-  const handleCloseLoginModal = () => {
-    setShowLoginModal(false);
-    setError('');
-    setUsername('');
-    setPassword('');
-  };
+
 
   //  회원가입 모달 닫기
   const handleCloseRegisterModal = () => {
@@ -94,14 +85,14 @@ function Login() {
 
   //  로그인 ↔ 회원가입 전환
   const switchToRegister = () => {
-    setShowLoginModal(false);
+    handleCloseLoginModal();
     setShowRegisterModal(true);
-    setError('');
+    // setError(''); // handleCloseLoginModal(); 안에있어
   };
 
   const switchToLogin = () => {
     setShowRegisterModal(false);
-    setShowLoginModal(true);
+    openLoginModal();
     setRegisterError('');
   };
 
@@ -123,7 +114,7 @@ function Login() {
         
       ) : (
         // 로그인 안된 상태
-        <button className="login-btn" onClick={() => setShowLoginModal(true)}>
+        <button className="login-btn" onClick={() => openLoginModal()}>
           로그인
         </button>
       )}
