@@ -3,10 +3,11 @@ import React, { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useLoginModal } from '../hooks/useLoginModal';
 import { useRegisterModal } from '../hooks/useRegisterModal';
+import { useModalSwitch } from '../hooks/useModalSwitch';
 import './Login.css';
 
 function Login() {
-  
+  const { user, loading, logout } = useAuth();
 
   // 로그인 모달 훅
   const {
@@ -38,9 +39,6 @@ function Login() {
     openRegisterModal,
   } = useRegisterModal();
   
-
-  const { user, loading, logout } = useAuth(); //  register 추가
-
   //  ESC 키로 모달 닫기
   useEffect(() => {
     const handleEscape = (e) => {
@@ -54,20 +52,16 @@ function Login() {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [showLoginModal, showRegisterModal, handleCloseLoginModal, handleCloseRegisterModal]);
 
-  
-
-  //  로그인 ↔ 회원가입 전환
-  const switchToRegister = () => {
-    handleCloseLoginModal();
-    openRegisterModal();
-    // setError(''); // handleCloseLoginModal(); 안에있어
-  };
-
-  const switchToLogin = () => {
-    handleCloseRegisterModal();
-    openLoginModal();
-    // setRegisterError(''); // handleCloseRegisterModal(); 안에있음
-  };
+  //모달 전환 훅
+  const {
+    switchToRegister,
+    switchToLogin,
+  } = useModalSwitch(
+    handleCloseLoginModal,
+    handleCloseRegisterModal,
+    openRegisterModal, 
+    openLoginModal,
+  )
 
   if (loading) {
     return <div className="loading">로딩 중...</div>;
