@@ -29,9 +29,18 @@ export const useFetchLastLocation = (mapRef, savedMarkersRef, user, serverUrl) =
 
                 if (typeof lat !== 'number' || typeof lng !== 'number') return;
 
-                // 이미 같은 id가 추가되어 있다면 중복 방지
+                // // 이미 같은 id가 추가되어 있다면 마커 중복 방지
                 const alreadyAdded = savedMarkersRef.current.find(m => m.id === 'last');
-                if (alreadyAdded) return;
+                // if (alreadyAdded) return;
+                if (alreadyAdded) {
+                    // 기존 마커 제거
+                    mapRef.current.removeLayer(alreadyAdded.marker);
+
+                    // 배열에서도 제거
+                    savedMarkersRef.current = savedMarkersRef.current.filter(
+                        m => m.id !== 'last'
+                    );
+                }
 
                 const marker = L.marker([lat, lng]).addTo(mapRef.current);
 
@@ -55,5 +64,5 @@ export const useFetchLastLocation = (mapRef, savedMarkersRef, user, serverUrl) =
         };
 
     fetchLastLocation();
-    }, [mapRef, savedMarkersRef, user, serverUrl]);
+    }, [mapRef, savedMarkersRef, user?.id, serverUrl]);
 };
