@@ -4,7 +4,7 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 const AuthContext = createContext();
 
 // API URL 설정
-// // 개발 환경에서는 http://localhost:5000/api, 프로덕션 환경에서는 배포된 서버 주소 사용
+// 개발 환경에서는 http://localhost:5000/api, 프로덕션 환경에서는 배포된 서버 주소 사용
   const serverUrl = process.env.NODE_ENV === 'production'
     ? 'https://parking-web-r.onrender.com'
     : 'http://localhost:5000';
@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 앱 시작 시 현재 사용자 확인
+  // 앱 시작 시 현재 사용자 확인, 자동 세션 로그인
   useEffect(() => {
     checkAuth();
   }, []);
@@ -30,8 +30,6 @@ export function AuthProvider({ children }) {
         const data = await response.json();
         setUser(data.user);
         console.log('✅ 자동 로그인:', data.user.username);
-      } else {
-        console.log('ℹ️ 로그인 필요');
       }
     } catch (error) {
       console.error('인증 확인 실패:', error);
@@ -43,7 +41,7 @@ export function AuthProvider({ children }) {
   // 회원가입
   const register = async (username, password) => {
     try {
-      console.log('📝 회원가입 시도:', username);
+      console.log(' 회원가입 시도:', username);
 
       const response = await fetch(`${serverUrl}/api/auth/register`, {
         method: 'POST',
@@ -57,7 +55,6 @@ export function AuthProvider({ children }) {
       const data = await response.json();
 
       if (!response.ok) {
-        console.error('❌ 회원가입 실패:', data.error);
         throw new Error(data.error || '회원가입에 실패했습니다.');
       }
 
@@ -95,7 +92,6 @@ export function AuthProvider({ children }) {
       })
 
       if (!response.ok) {
-        console.error('❌ 로그인 실패:', data.error);
         throw new Error(data.error || '로그인에 실패했습니다.');
       }
 
@@ -148,7 +144,7 @@ export function AuthProvider({ children }) {
   );
 }
 
-// Custom Hook
+// 커스텀 훅, 일단 같이씀
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
