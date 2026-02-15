@@ -37,7 +37,7 @@ parking_web-r/
 │       │   └── useMapLocation.js       # 지도 위치 표시, 업데이트
 │       │
 │       ├── context/
-│       │   └── AuthContext.js          # Context API (인증 상태 관리)
+│       │   └── AuthContext.js          # Context API (인증 상태 관리), 세션 로그인 방식
 │       └── theme/
 │           ├── themeStore.js           # zustand 다크 모드 상태 관리
 │           └── ThemeToggle.js          # zustand 다크 모드 토글 버튼
@@ -96,7 +96,6 @@ parking_web-r/
 -   **추가 기능:**
     -   `pre('save')` 미들웨어를 사용하여 사용자가 저장되기 전 비밀번호를 `bcrypt`로 암호화
     -   `comparePassword` 메서드를 추가하여 로그인 시 입력된 비밀번호와 암호화된 비밀번호를 비교합니다.
-
 ---
 
 ## 프론트엔드 (Client)
@@ -237,4 +236,5 @@ MongoDB는 유연한 스키마와 빠른 개발 속도 때문에 스타트업이
   ---
 
 
-  
+  추가 고려 사항
+  유저가 주변에 주차단속 카메라를 db에 저장할 수 있게 하고 주변 일정 거리에게 경고
