@@ -17,7 +17,7 @@ function SaveButton({ onSave, isLoggedIn  }) {
         onClick={handleButtonClick}
         style={{ padding: '10px', cursor: 'pointer', display: 'block', marginBottom: '5px' }}
       >
-        주차 위치 저장
+        주차 단속 위치 저장
       </button>
       <input
         type="file"
