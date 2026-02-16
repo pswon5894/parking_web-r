@@ -22,19 +22,22 @@ https://parking-web-r.onrender.com
 
 ## 프로젝트 구조
 
----
 ```
 parking_web-r/
-├── client/
+├── client/                             # js, react, context api, zustand
 │   └── src/
 │       ├── components/
 │       │   ├── Login.js                # 로그인 폼과 관련된 UI 및 기능
-│       │   ├── MapComponent.js         # 지도에 위치 마커 표시
-│       │   └── SaveButton.js
+│       │   └── MapComponent.js         # 지도에 위치 마커 표시
+│       │   
 │       ├── hook/                       
-│       │   ├── useMapInitialization.js # 지도 초기화
+│       │   ├── useMapInitialization.js # 지도 초기화, 지도 리사이즈
 │       │   ├── useMapLastLocation.js   # 지도 마지막 위치 서버에서 가져오기
-│       │   └── useMapLocation.js       # 지도 위치 표시, 업데이트
+│       │   ├── useMapLocation.js       # 지도 위치 표시, 업데이트
+│       │   ├── useMapMarkers.js        # 지도 마커 관리 
+│       │   ├── useLoginModal.js        # 로그인 모달
+│       │   ├── useRegisterModal.js     # 회원가입 모달
+│       │   └── useModalSwitch          # 전한 관리 모달
 │       │
 │       ├── context/
 │       │   └── AuthContext.js          # Context API (인증 상태 관리), 세션 로그인 방식
@@ -42,13 +45,14 @@ parking_web-r/
 │           ├── themeStore.js           # zustand 다크 모드 상태 관리
 │           └── ThemeToggle.js          # zustand 다크 모드 토글 버튼
 │
-└── server/
+└── server/                             # node.js, express 웹 프레임워크
     ├── models/
     │   └── User.js                     # db 모델, 차량 주차 위치, 시간 저장
     ├── routes/
     │   └── user.js                     # 주차 마지막 위치, 주차 위치 저장 api
     └── server.js                       # 아이디 로그인등 관련 api
 
+    DB-mongoDB
 ```
 
 전체적인 흐름:
@@ -177,64 +181,6 @@ parking_web-r/
 - 단순히 유저당 1개의 주차 정보만 저장 → User 모델에 포함해도 충분.
 - 유저당 여러 차량/주차 기록을 저장 → Car 모델을 분리하는 것이 훨씬 유연하고 확장성 있음.
 - 장기적으로 서비스 확장 가능성 (예: 주차장 관리, 차량별 기록, 결제 등) → 분리하는 것이 안전한 선택.
-
-MongoDB는 유연한 스키마와 빠른 개발 속도 때문에 스타트업이나 프로토타입에 적합하지만, 주차 관리처럼 관계형 데이터가 많거나 트랜잭션 안정성이 중요한 경우에는 PostgreSQL 같은 RDBMS가 더 나은 선택
-
-
-
-
-✦ 프로젝트 구조 설명
- --
-  
-       * `components/`:
-           * 재사용 가능한 UI 컴포넌트들을 모아둔 디렉토리입니다. 예를 들어 MapComponent.js는 지도를 표시하고 상호작용하는 로직을, Login.js는 로그인 폼과 관련된 UI 
-             및 기능을, SaveButton.js는 주차 위치 저장 버튼을, ImageModal.js는 이미지 모달을 담당하는 식입니다. 각 컴포넌트는 자체적인 상태와 로직을 가질 수        
-             있습니다.
-
-
-       * `context/`:
-           * React의 Context API를 사용하여 전역 상태를 관리하는 데 사용됩니다. AuthContext.js는 사용자 인증 상태(로그인 여부, 사용자 정보 등)를 애플리케이션 전반에
-             걸쳐 효율적으로 공유하고 접근할 수 있도록 하는 역할을 합니다.
-
-
-       * `store/`:
-           * zustand와 같은 상태 관리 라이브러리를 사용하여 전역 상태를 관리하는 디렉토리입니다. authStore.js는 인증 관련 상태를 zustand 스토어로 관리하며,
-             themeStore.js는 애플리케이션 테마와 관련된 상태를 관리합니다. context/와 함께 복잡한 상태 관리 요구사항을 처리하는 데 사용됩니다.
-
-
-       * `App.js`:
-           * 메인 애플리케이션 컴포넌트입니다. 일반적으로 라우팅(React Router 등 사용), 전역적인 레이아웃 구성, 그리고 다른 주요 컴포넌트들을 조합하여
-             애플리케이션의 전반적인 구조를 정의합니다.
-
-
-       * `index.js`:
-           * React 애플리케이션의 시작점입니다. public/index.html 파일에 React 컴포넌트를 마운트(렌더링)하는 역할을 합니다. 여기에서 App.js 컴포넌트를 불러와       
-             렌더링합니다.
-
-  ---
-
-
-  server/
-  Node.js와 Express.js 프레임워크를 사용하여 구축된 백엔드 애플리케이션을 담당하는 디렉토리입니다. 클라이언트의 요청을 받아 데이터를 처리하고, 데이터베이스와       
-  상호작용하며, 클라이언트에 응답을 반환
-
-
-   * `models/`:
-       * MongoDB 데이터베이스의 스키마(데이터 구조)를 정의하는 디렉토리입니다. Mongoose ODM(Object Data Modeling) 라이브러리를 사용하여 User.js와 같이 사용자       
-         데이터의 구조, 유효성 검사, 관계 등을 정의 이는 데이터베이스와의 상호작용을 추상화하고 코드를 구조화하는 데 도움을 줍니다.
-
-
-   * `routes/`:
-       * 클라이언트가 접근할 수 있는 API 엔드포인트들을 정의하는 디렉토리입니다. 예를 들어 user.js는 사용자 등록, 로그인, 프로필 정보 조회, 주차 위치 저장 등 사용자
-         관련 요청을 처리하는 라우트 핸들러들을 포함 각 라우트는 특정 HTTP 메소드(GET, POST 등)와 URL 경로에 매핑
-
-
-   * `server.js`:
-       * 백엔드 서버의 시작점입니다. Express 애플리케이션을 초기화하고, 미들웨어를 설정하며(예: CORS, body-parser), 데이터베이스 연결을 설정하고, 정의된 라우트들을 
-         로드하여 특정 포트에서 서버를 시작하는 역할
-
-  ---
-
 
   추가 고려 사항
   유저가 주변에 주차단속 카메라를 db에 저장할 수 있게 하고 주변 일정 거리에게 경고
