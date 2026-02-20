@@ -1,14 +1,11 @@
 # parking_web-r
 
-주차 위치 공유 웹 (리액터)
+주차 위치 공유 웹
 
 # 웹 배포
 
 웹 페이지 vercel 배포
 https://parking-web-r.vercel.app/
-
-백엔드 render 배포
-https://parking-web-r.onrender.com
 
 ## 개발 동기
 어머니와 이모가 차를 공유하는데, 주차 위치를 기억 못하거나 설명을 못해서
@@ -18,7 +15,7 @@ https://parking-web-r.onrender.com
 ## UI/UX
 주차 위치가 마커로 표시된 지도 화면
 
-로그인 버튼, 위치 갱신 버튼, 위치 저장 버튼
+로그인 버튼, 위치 갱신 버튼
 
 ## 프로젝트 구조
 
@@ -37,13 +34,13 @@ parking_web-r/
 │       │   ├── useMapMarkers.js        # 지도 마커 관리 
 │       │   ├── useLoginModal.js        # 로그인 모달
 │       │   ├── useRegisterModal.js     # 회원가입 모달
-│       │   └── useModalSwitch          # 전한 관리 모달
+│       │   └── useModalSwitch          # 모달 전환 관리
 │       │
 │       ├── context/
-│       │   └── AuthContext.js          # Context API (인증 상태 관리), 세션 로그인 방식
+│       │   └── AuthContext.js          # Context API 인증 상태 관리, 세션 로그인 방식
 │       └── theme/
-│           ├── themeStore.js           # zustand 다크 모드 상태 관리
-│           └── ThemeToggle.js          # zustand 다크 모드 토글 버튼
+│           ├── themeStore.js           # zustand 다크 모드 상태 관리, localstorage로 테마상태 기억
+│           └── ThemeToggle.js          # 테마 토글 UI 컴포넌트
 │
 └── server/                             # node.js, express 웹 프레임워크
     ├── models/
