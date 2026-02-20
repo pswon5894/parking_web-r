@@ -43,7 +43,8 @@ export const useMapLocation = (mapRef, currentLocationMarkerRef, onLocationChang
     }
 
     setCurrentLatLng({ lat, lng });
-    onLocationChange(e.latlng);
+    onLocationChange?.(e.latlng);   // 함수가 비어있을수도, 옵셔널 체이닝 연산자, - ?. 는 앞의 객체나 함수가 존재할 경우에만 접근하거나 호출
+
 
     // 기존 마커 제거
     if (currentLocationMarkerRef.current && mapRef.current) {

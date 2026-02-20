@@ -16,14 +16,15 @@ function App() {
   // const { user, serverUrl } = useAuth();
 
   // const [currentLatLng, setCurrentLatLng] = useState(null);
+  const [, setCurrentLatLng] = useState(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState('');
   // const [markers, setMarkers] = useState([]); // 마커들 저장
 
   // Callback to receive current location from MapComponent
-  // const handleLocationChange = useCallback((latlng) => {
-  //   setCurrentLatLng(latlng);
-  // }, []);
+  const handleLocationChange = useCallback((latlng) => {
+    setCurrentLatLng(latlng);
+  }, []);
 
   // Function to open the image modal
   const openImageModal = useCallback((src) => {
@@ -118,7 +119,7 @@ function App() {
       
       {/* markers와 openImageModal을 MapComponent에 전달 */}
       <MapComponent 
-        // onLocationChange={handleLocationChange}
+        onLocationChange={handleLocationChange}
         // markers={markers}
         onMarkerImageClick={openImageModal}
       />
