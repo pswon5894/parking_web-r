@@ -49,7 +49,7 @@ parking_web-r/
     │   └── user.js                     # 주차 마지막 위치, 주차 위치 저장 api
     └── server.js                       # 아이디 로그인등 관련 api
 
-    DB-mongoDB
+    DB-mongoDB                          # 비관계형 db
 ```
 
 전체적인 흐름:
@@ -131,7 +131,6 @@ parking_web-r/
 ### 상태 관리 (`context/AuthContext.js`, `store/authStore.js`)
 
 -   **`AuthContext`:** React의 Context API를 사용하여 애플리케이션 전역에 로그인된 사용자 정보(`user`)와 로딩 상태(`loading`)를 제공합니다.
--   **`authStore` (Zustand):** `isLoggedIn`과 같은 간단한 상태를 관리하며, Context API와 함께 사용되어 상태 관리 로직을 보완합니다.
 
 ---
 
@@ -181,3 +180,5 @@ parking_web-r/
 
   추가 고려 사항
   유저가 주변에 주차단속 카메라를 db에 저장할 수 있게 하고 주변 일정 거리에게 경고
+  후원 기능 추가, 결제 구현
+  구글 로그인, 카톡 로그인 구현?
