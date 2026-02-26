@@ -84,19 +84,13 @@ export function AuthProvider({ children }) {
 
       const data = await response.json();
 
-      setUser({
-        id: data.user.id,
-        username: data.user.username,
-        latitude: data.user.latitude,
-        longitude: data.user.longitude
-      })
-
       if (!response.ok) {
         throw new Error(data.error || '로그인에 실패했습니다.');
       }
 
       console.log('✅ 로그인 성공:', data.user.username);
       setUser(data.user);
+      
       return data.user;
 
     } catch (error) {
