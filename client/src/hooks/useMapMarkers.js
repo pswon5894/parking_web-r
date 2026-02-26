@@ -10,24 +10,32 @@ import { createPopupContent } from '../utils/popupUtils';
  * @param {Array} markers - 마커 데이터 배열
  * @param {Function} onMarkerImageClick - 마커 이미지 클릭 핸들러
  */
+
+//커스텀훅
 export const useMapMarkers = (mapRef, savedMarkersRef, markers, onMarkerImageClick) => {
   
   // 모든 저장된 마커 제거
   const clearSavedMarkers = useCallback(() => {
+    //아직 지도가 생성되지 않았다면
     if (!mapRef.current) return;
     
+    //저장된 모든 마커 지도에서 삭제
     savedMarkersRef.current.forEach(m => {
       mapRef.current.removeLayer(m.marker);
     });
+    //마커 목록을 빈 배열로 초기화
     savedMarkersRef.current = [];
   }, [mapRef, savedMarkersRef]);
 
   // 마커 추가 및 업데이트
+//   markers 배열이 바뀔 때마다 실행됩니다.
+//  지도가 없거나 마커 데이터가 없으면 건너뜁니다.
   useEffect(() => {
     if (!mapRef.current || !markers) return;
 
-    console.log('Updating markers:', markers.length);
+    // console.log('Updating markers:', markers.length);
 
+    // 새로 들어온 마커 데이터 배열을 순회
     markers.forEach((markerData) => {
       // 중복 방지
       const alreadyAdded = savedMarkersRef.current.find(m => m.id === markerData.id);

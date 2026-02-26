@@ -65,18 +65,18 @@ parking_web-r/
 
 ### `server.js`
 
--   **역할:** 백엔드 서버의 메인 진입점입니다.
+-   **역할:** 백엔드 서버의 메인 진입점
 -   **주요 기능:**
-    -   Express 앱을 생성하고 포트를 설정합니다.
-    -   `mongoose`를 사용하여 MongoDB Atlas 데이터베이스에 연결합니다.
-    -   `cors` 미들웨어를 설정하여 (React 클라이언트)에서의 요청을 허용합니다.
+    -   Express 앱을 생성하고 포트를 설정
+    -   `mongoose`를 사용하여 MongoDB Atlas 데이터베이스에 연결
+    -   `cors` 미들웨어를 설정하여 (React 클라이언트)에서의 요청을 허용
     -   `express.json()`, `express.urlencoded()` 미들웨어를 사용하여 POST 요청의 `body`를 파싱합니다.
     -   `express-session`과 `connect-mongo`를 사용하여 사용자 로그인 세션을 관리하고, 세션 정보를 MongoDB에 저장합니다.
-    -   `/api/auth` 경로의 요청을 `routes/user.js` 파일로 라우팅합니다.
+    -   `/api/auth` 경로의 요청을 `routes/user.js` 파일로 라우팅
 
 ### `routes/user.js`
 
--   **역할:** 사용자 관련 API 엔드포인트를 정의합니다.
+-   **역할:** 사용자 관련 API 엔드포인트를 정의
 -   **주요 엔드포인트:**
     -   `POST /api/auth/register`: 신규 사용자 회원가입을 처리합니다.
     -   `POST /api/auth/login`: 사용자 로그인을 처리하고 세션을 생성합니다.
