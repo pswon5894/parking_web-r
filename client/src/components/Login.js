@@ -57,8 +57,8 @@ function Login() {
     switchToRegister,
     switchToLogin,
   } = useModalSwitch(
-    showLoginModal,             
-    showRegisterModal, 
+    // showLoginModal,             
+    // showRegisterModal, 
     handleCloseLoginModal,
     handleCloseRegisterModal,
     openRegisterModal, 
